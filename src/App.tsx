@@ -4,6 +4,7 @@ import { AddBuffetForm } from './components/Admin/AddBuffetForm'
 import { BuffetList } from './components/BuffetList/BuffetList'
 import { BuffetMap } from './components/Map/BuffetMap'
 import { SearchBar } from './components/SearchBar/SearchBar'
+import { InstallPrompt } from './components/InstallPrompt/InstallPrompt'
 import goonImage from './assets/goon.png'
 import { buffets } from './data/buffets'
 import type { Buffet } from './types/Buffet'
@@ -68,6 +69,7 @@ function MapApp() {
           <div className="empty-state" role="status"><strong>No buffets on this route.</strong><span>Try another name, city, or buffet type.</span><button onClick={() => setQuery('')}>Clear search</button></div>
         )}
         {selected && <BuffetCard buffet={selected} onClose={() => updateSelection(null)} />}
+        <InstallPrompt hidden={selected !== null} />
       </section>
     </main>
   )

@@ -35,6 +35,38 @@ npm run build
 npm run preview
 ```
 
+## Installing Mullet Review
+
+The buffet map can be added to a device as **Mullet Review**, with the crab-rangoon app icon and a standalone app window. Installation adds a convenient launcher; this project intentionally does not include a service worker or offline caching.
+
+### Android / Chrome
+
+1. Open the buffet map in Chrome.
+2. Use the in-app **Add to Home Screen** prompt.
+3. Confirm the browser's native installation prompt.
+
+Chrome's browser menu may also offer **Install app** or **Add to Home screen**. On supported desktop Chromium browsers, the in-app action opens the same native installation flow.
+
+### iPhone / iPad
+
+1. Open the site in Safari.
+2. Tap **Share**.
+3. Choose **Add to Home Screen**.
+4. Confirm.
+
+Because iOS does not expose a programmable installation prompt, the in-app card provides these manual instructions instead. The card is hidden when the app is already running from the Home Screen, and dismissing it suppresses it for approximately 14 days.
+
+### App icon maintenance
+
+`src/assets/goon.png` is the canonical source artwork. The install-ready standard, maskable Android, and Apple touch icons in `public/icons/` are generated derivatives; do not edit them independently. Regenerate the complete set after changing the source with:
+
+```bash
+npm run generate:icons
+npm run validate:pwa
+```
+
+After regeneration, add the generated files to the repository so GitHub Pages builds remain deterministic. The generator preserves the standard artwork and transparency, while maskable variants place a safely padded version over the site's existing orange brand color.
+
 ## Owner: Add a Buffet
 
 The normal owner workflow is:
