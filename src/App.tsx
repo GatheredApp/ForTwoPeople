@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { BuffetCard } from './components/BuffetCard/BuffetCard'
 import { AddBuffetForm } from './components/Admin/AddBuffetForm'
+import { BuffetList } from './components/BuffetList/BuffetList'
 import { BuffetMap } from './components/Map/BuffetMap'
 import { SearchBar } from './components/SearchBar/SearchBar'
+import goonImage from './assets/goon.png'
 import { buffets } from './data/buffets'
 import type { Buffet } from './types/Buffet'
 import { buffetIdFromSearch, filterBuffets, searchWithBuffet } from './utilities/buffets'
@@ -13,6 +15,7 @@ export default function App() {
 }
 
 function MapApp() {
+  const [viewMode, setViewMode] = useState<'map' | 'list'>('map')
   const [query, setQuery] = useState('')
   const [selected, setSelected] = useState<Buffet | null>(() => {
     const id = buffetIdFromSearch(window.location.search)
@@ -44,12 +47,19 @@ function MapApp() {
   return (
     <main className="app-shell">
       <header className="brand-bar">
-        <div className="brand-mark" aria-hidden="true">MR</div>
-        <div><p>Fan-made food finds</p><h1>Mullet Review <span>Buffet Map</span></h1></div>
-        <span className="location-badge">{buffets.length} {buffets.length === 1 ? 'location' : 'locations'}</span>
+        <div className="brand-mark" aria-hidden="true"><img src={goonImage} alt="" /></div>
+        <div className="brand-copy"><p>For Two People Presents</p><h1>Mullet Review <span>Buffet Map</span></h1></div>
+        <div className="view-toggle" role="group" aria-label="Choose buffet view">
+          <button type="button" aria-pressed={viewMode === 'map'} onClick={() => setViewMode('map')}>Map</button>
+          <button type="button" aria-pressed={viewMode === 'list'} onClick={() => setViewMode('list')}>List</button>
+        </div>
       </header>
-      <section className="map-stage" aria-label="Buffet discovery map">
-        <BuffetMap buffets={matches} selected={selected} onSelect={(buffet) => updateSelection(buffet)} />
+      <section className={`map-stage ${viewMode}-view`} aria-label="Buffet discovery">
+        {viewMode === 'map' ? (
+          <BuffetMap buffets={matches} selected={selected} onSelect={(buffet) => updateSelection(buffet)} />
+        ) : (
+          <BuffetList buffets={matches} selected={selected} onSelect={(buffet) => updateSelection(buffet)} />
+        )}
         <SearchBar query={query} count={matches.length} onChange={setQuery} />
         {matches.length === 0 && (
           <div className="empty-state" role="status"><strong>No buffets on this route.</strong><span>Try another name, city, or buffet type.</span><button onClick={() => setQuery('')}>Clear search</button></div>
