@@ -9,7 +9,24 @@ function loadDraft(): BuffetDraft {
   catch { return emptyDraft }
 }
 
-type FieldProps = { field: keyof BuffetDraft; label: string; required?: boolean; type?: string; placeholder?: string; help?: string }
+type FieldProps = {
+  label: string
+  value: string
+  onChange: (value: string) => void
+  validationMessage?: string
+  showValidation: boolean
+  required?: boolean
+  type?: string
+  placeholder?: string
+  help?: string
+}
+
+function Field({ label, value, onChange, validationMessage, showValidation, required, type = 'text', placeholder, help }: FieldProps) {
+  return <label className="admin-field"><span>{label}{required && <b aria-hidden="true"> *</b>}</span>
+    <input type={type} value={value} placeholder={placeholder} required={required} onChange={(event) => onChange(event.target.value)} aria-invalid={showValidation && Boolean(validationMessage)} />
+    {help && <small>{help}</small>}{showValidation && validationMessage && <em role="alert">{validationMessage}</em>}
+  </label>
+}
 
 export function AddBuffetForm() {
   const [draft, setDraft] = useState(loadDraft)
@@ -37,12 +54,12 @@ export function AddBuffetForm() {
       return next
     })
   }
-  const Field = ({ field, label, required, type = 'text', placeholder, help }: FieldProps) => (
-    <label className="admin-field"><span>{label}{required && <b aria-hidden="true"> *</b>}</span>
-      <input type={type} value={draft[field]} placeholder={placeholder} required={required} onChange={(event) => update(field, event.target.value)} aria-invalid={showErrors && Boolean(errors[field])} />
-      {help && <small>{help}</small>}{showErrors && errors[field] && <em role="alert">{errors[field]}</em>}
-    </label>
-  )
+  const fieldProps = (field: keyof BuffetDraft) => ({
+    value: draft[field],
+    onChange: (value: string) => update(field, value),
+    validationMessage: errors[field],
+    showValidation: showErrors,
+  })
   const clear = () => {
     if (dirty && !window.confirm('Clear this buffet draft?')) return
     setDraft(emptyDraft); setIdOverridden(false); setShowErrors(false); localStorage.removeItem(DRAFT_KEY)
@@ -63,25 +80,25 @@ export function AddBuffetForm() {
     <div className="admin-layout"><form className="admin-form" onSubmit={(event) => { event.preventDefault(); submit() }} noValidate>
       <p className="required-note"><b>*</b> Required field. Your draft is saved in this browser.</p>
       <fieldset><legend>Restaurant</legend>
-        <Field field="name" label="Buffet name" required placeholder="Great Wall Buffet" />
+        <Field {...fieldProps('name')} label="Buffet name" required placeholder="Great Wall Buffet" />
         <label className="admin-field admin-wide"><span>Generated ID <b aria-hidden="true">*</b></span><input value={draft.id} required onChange={(event) => { setIdOverridden(true); update('id', event.target.value) }} aria-invalid={showErrors && Boolean(errors.id)} /><small>You may edit this lowercase URL-safe identifier; automatic updates will then stop.</small>{showErrors && errors.id && <em role="alert">{errors.id}</em>}</label>
-        <Field field="buffetType" label="Buffet type" placeholder="Chinese" /><Field field="price" label="Price" placeholder="$$ or $14.99" />
+        <Field {...fieldProps('buffetType')} label="Buffet type" placeholder="Chinese" /><Field {...fieldProps('price')} label="Price" placeholder="$$ or $14.99" />
       </fieldset>
       <fieldset><legend>Location</legend>
-        <Field field="address" label="Street address" required placeholder="123 Main St" /><Field field="city" label="City" required />
+        <Field {...fieldProps('address')} label="Street address" required placeholder="123 Main St" /><Field {...fieldProps('city')} label="City" required />
         <label className="admin-field"><span>State <b aria-hidden="true">*</b></span><select value={draft.state} required onChange={(event) => update('state', event.target.value)} aria-invalid={showErrors && Boolean(errors.state)}><option value="">Select state</option>{US_STATES.map((state) => <option key={state}>{state}</option>)}</select>{showErrors && errors.state && <em role="alert">{errors.state}</em>}</label>
-        <Field field="postalCode" label="Postal code" />
-        <Field field="latitude" label="Latitude" required type="number" placeholder="39.005" help="Decimal coordinate from -90 to 90." />
-        <Field field="longitude" label="Longitude" required type="number" placeholder="-85.62" help="Decimal coordinate from -180 to 180." />
+        <Field {...fieldProps('postalCode')} label="Postal code" />
+        <Field {...fieldProps('latitude')} label="Latitude" required type="number" placeholder="39.005" help="Decimal coordinate from -90 to 90." />
+        <Field {...fieldProps('longitude')} label="Longitude" required type="number" placeholder="-85.62" help="Decimal coordinate from -180 to 180." />
       </fieldset>
       <fieldset><legend>Review</legend>
-        <Field field="youtubeUrl" label="YouTube URL" required type="url" placeholder="https://youtu.be/…" />
+        <Field {...fieldProps('youtubeUrl')} label="YouTube URL" required type="url" placeholder="https://youtu.be/…" />
         <div className="detected-id"><span>Detected video ID</span><code>{extractYouTubeId(draft.youtubeUrl) ?? 'Waiting for a valid URL'}</code></div>
-        <Field field="yelpUrl" label="Yelp URL" type="url" placeholder="https://www.yelp.com/biz/…" /><Field field="reviewDate" label="Review date" type="date" />
+        <Field {...fieldProps('yelpUrl')} label="Yelp URL" type="url" placeholder="https://www.yelp.com/biz/…" /><Field {...fieldProps('reviewDate')} label="Review date" type="date" />
       </fieldset>
       <fieldset><legend>Ratings</legend>
         <label className="admin-field"><span>Rangoon Rating</span><select value={draft.rangoonRating} onChange={(event) => update('rangoonRating', event.target.value)}><option value="">None</option>{[1,2,3,4,5].map((rating) => <option key={rating}>{rating}</option>)}</select>{showErrors && errors.rangoonRating && <em>{errors.rangoonRating}</em>}</label>
-        <Field field="reviewerRating" label="Reviewer rating" type="number" />
+        <Field {...fieldProps('reviewerRating')} label="Reviewer rating" type="number" />
         <label className="admin-field"><span>Open status</span><select value={draft.isOpen} onChange={(event) => update('isOpen', event.target.value)}><option value="">Unknown</option><option value="open">Open</option><option value="closed">Closed</option></select></label>
       </fieldset>
       <fieldset><legend>Additional information</legend><label className="admin-field admin-wide"><span>Notes</span><textarea value={draft.notes} rows={4} onChange={(event) => update('notes', event.target.value)} placeholder="Optional editorial notes" /></label></fieldset>
