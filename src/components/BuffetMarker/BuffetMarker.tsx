@@ -1,5 +1,6 @@
 import L from 'leaflet'
 import { Marker, Tooltip } from 'react-leaflet'
+import goonImage from '../../assets/goon.png'
 import type { Buffet } from '../../types/Buffet'
 
 interface BuffetMarkerProps {
@@ -9,8 +10,8 @@ interface BuffetMarkerProps {
 }
 
 const icons = {
-  normal: L.divIcon({ className: 'buffet-pin-wrap', html: '<span class="buffet-pin">🍴</span>', iconSize: [42, 48], iconAnchor: [21, 44] }),
-  selected: L.divIcon({ className: 'buffet-pin-wrap selected', html: '<span class="buffet-pin">🍴</span>', iconSize: [50, 56], iconAnchor: [25, 52] }),
+  normal: L.divIcon({ className: 'buffet-pin-wrap', html: `<span class="buffet-pin"><img src="${goonImage}" alt="" aria-hidden="true" /></span>`, iconSize: [42, 48], iconAnchor: [21, 44] }),
+  selected: L.divIcon({ className: 'buffet-pin-wrap selected', html: `<span class="buffet-pin"><img src="${goonImage}" alt="" aria-hidden="true" /></span>`, iconSize: [50, 56], iconAnchor: [25, 52] }),
 }
 
 export function BuffetMarker({ buffet, selected, onSelect }: BuffetMarkerProps) {
