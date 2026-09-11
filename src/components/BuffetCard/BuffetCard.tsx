@@ -25,11 +25,6 @@ export function BuffetCard({ buffet, onClose }: BuffetCardProps) {
         {buffet.reviewDate && <div className="review-date"><span>Reviewed</span><strong>{formatDate(buffet.reviewDate)}</strong></div>}
       </div>
       {buffet.notes && <p className="notes">{buffet.notes}</p>}
-      {buffet.yelpUrl && (
-        <a className="yelp-line" href={buffet.yelpUrl} target="_blank" rel="noreferrer">
-          {buffet.yelpRating != null ? `★ ${buffet.yelpRating.toFixed(1)} on Yelp${buffet.yelpReviewCount != null ? ` · ${buffet.yelpReviewCount.toLocaleString()} reviews` : ''}` : 'View on Yelp'}
-        </a>
-      )}
       <VideoPlayer key={buffet.id} videoId={buffet.youtubeVideoId} title={buffet.name} playSignal={playSignal} />
       <div className="actions">
         {buffet.youtubeVideoId && <button className="primary-action" type="button" onClick={() => setPlaySignal((value) => value + 1)}>▶ Watch Review</button>}
