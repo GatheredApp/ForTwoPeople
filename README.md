@@ -173,3 +173,18 @@ For issue ingestion to push its validated commit, go to **Repository → Setting
 - Researching or verifying the real Mullet Review buffet catalog.
 - Live Yelp or YouTube API data (deliberately unnecessary for this static version).
 - User accounts, submissions, ratings, and other backend features.
+
+## Post Your Review
+
+Community members can review any buffet—even one that is not yet on the map:
+
+1. Open the site and click **Post Your Review**.
+2. Fill out the buffet and review sections. A free GitHub account is required; create one at [https://github.com/signup](https://github.com/signup) if necessary.
+3. Click **Post Your Review**. GitHub opens a pre-filled issue; sign in and click **Submit new issue**.
+4. GatheredApp moderates the issue. If approved, an Action validates and publishes the review automatically.
+
+The form can link an existing buffet when it is safely identifiable. Approved reviews of unlisted buffets remain visible on **Community Reviews** with a “Not currently on the map” label. Approval does not create a buffet map record; **Suggest a Buffet** remains the way to propose a missing location.
+
+Review issues contain exactly one `REVIEW_PUBLIC_SUBMISSION_V1` payload. Opening an issue only adds the `review-submission` triage label and never publishes it. Publication requires the `approved-review` label to be applied by the `GatheredApp` account. The approval Action and ingestion script both enforce that authorization; ingestion derives the GitHub username, issue number, timestamp, and review ID from the approved label-event snapshot rather than trusting browser data or re-fetching editable issue content.
+
+The review and buffet ingestion workflows share the `repository-data-ingestion` concurrency group so their commits cannot race. The triage workflow creates the two review labels when needed, so no manual label setup is normally required. Repository Actions must retain permission to push to the default branch (and branch protection must permit the bot), consistent with the existing buffet ingestion workflow.

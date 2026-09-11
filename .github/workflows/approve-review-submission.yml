@@ -1,0 +1,69 @@
+name: Publish approved community review
+on:
+  issues:
+    types: [labeled]
+permissions:
+  contents: write
+  issues: write
+concurrency:
+  group: repository-data-ingestion
+  cancel-in-progress: false
+jobs:
+  ingest:
+    if: github.event.label.name == 'approved-review' && github.event.sender.login == 'GatheredApp'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Authorize, validate, and append approved snapshot
+        id: ingestion
+        continue-on-error: true
+        run: node scripts/add-approved-review.mjs
+      - name: Comment with validation error
+        if: steps.ingestion.outcome == 'failure'
+        uses: actions/github-script@v7
+        env:
+          ERROR: ${{ steps.ingestion.outputs.error }}
+        with:
+          script: await github.rest.issues.createComment({...context.repo,issue_number:context.issue.number,body:`❌ Could not publish this review: ${process.env.ERROR || 'The submission could not be validated.'}`})
+      - if: steps.ingestion.outcome == 'failure'
+        run: exit 1
+      - if: steps.ingestion.outputs.duplicate != 'true'
+        run: npm run validate:data
+      - if: steps.ingestion.outputs.duplicate != 'true'
+        run: npm run test
+      - if: steps.ingestion.outputs.duplicate != 'true'
+        run: npm run lint
+      - if: steps.ingestion.outputs.duplicate != 'true'
+        run: npm run build
+      - name: Commit and push
+        id: commit
+        if: steps.ingestion.outputs.duplicate != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/reviews.json
+          git commit -m "Add community review from issue #${{ github.event.issue.number }}"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          git push origin "HEAD:${{ github.event.repository.default_branch }}"
+      - name: Comment and close
+        uses: actions/github-script@v7
+        env:
+          DUPLICATE: ${{ steps.ingestion.outputs.duplicate }}
+          SHA: ${{ steps.commit.outputs.sha }}
+        with:
+          script: |
+            const body=process.env.DUPLICATE==='true' ? 'This GitHub issue has already been published as a community review.' : `✅ Approved and published this community review.\n\nThe site deployment should begin automatically. Commit: ${process.env.SHA}`
+            await github.rest.issues.createComment({...context.repo,issue_number:context.issue.number,body})
+            await github.rest.issues.update({...context.repo,issue_number:context.issue.number,state:'closed'})
+      - name: Explain a failed check or push
+        if: failure() && steps.ingestion.outcome != 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: await github.rest.issues.createComment({...context.repo,issue_number:context.issue.number,body:'❌ The review passed submission validation, but a required repository check or push failed. The issue remains open.'})

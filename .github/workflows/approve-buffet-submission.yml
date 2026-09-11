@@ -9,7 +9,7 @@ permissions:
   issues: write
 
 concurrency:
-  group: buffet-record-ingestion
+  group: repository-data-ingestion
   cancel-in-progress: false
 
 jobs:

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { buffets } from '../../data/buffets'
 import { createIssueUrl, createPublicIssueUrl, emptyDraft, extractYouTubeId, findDuplicates, generateBuffetId, normalizeDraft, US_STATES, validateDraft, type BuffetDraft } from '../../utilities/admin'
+import { GitHubAccountNotice } from '../Contributions/GitHubAccountNotice'
 
 function loadDraft(key: string): BuffetDraft {
   try { return { ...emptyDraft, ...JSON.parse(localStorage.getItem(key) ?? '{}') } }
@@ -79,6 +80,7 @@ export function AddBuffetForm({ mode = 'admin' }: { mode?: 'admin' | 'public' })
     <header className="admin-header"><div><p>{isPublic ? 'For Two People Presents' : 'Buffet dataset administration'}</p><h1>{isPublic ? 'Suggest a Buffet' : 'Add Buffet'}</h1></div><a href={`${window.location.pathname}${window.location.hash}`}>← Back to Map</a></header>
     <div className="admin-layout"><form className="admin-form" onSubmit={(event) => { event.preventDefault(); submit() }} noValidate>
       {isPublic && <p className="form-intro">Know a Mullet Review buffet we're missing? Send it to us for review.<br />Submissions are reviewed before they are added to the map.</p>}
+      {isPublic && <GitHubAccountNotice />}
       <p className="required-note"><b>*</b> Required field. Your draft is saved in this browser.</p>
       <fieldset><legend>Restaurant</legend>
         <Field {...fieldProps('name')} label="Buffet name" required placeholder="Great Wall Buffet" />
@@ -105,7 +107,7 @@ export function AddBuffetForm({ mode = 'admin' }: { mode?: 'admin' | 'public' })
       <fieldset><legend>Additional information</legend><label className="admin-field admin-wide"><span>Notes</span><textarea value={draft.notes} rows={4} onChange={(event) => update('notes', event.target.value)} placeholder="Optional editorial notes" /></label></fieldset>
       {showErrors && Object.keys(errors).length > 0 && <div className="form-alert" role="alert">Please correct the highlighted fields before submitting.</div>}
       {duplicates.length > 0 && <div className="form-alert" role="alert"><strong>Possible duplicate — submission is blocked.</strong><ul>{duplicates.map((problem) => <li key={problem}>{problem}</li>)}</ul></div>}
-      {isPublic && <p className="moderation-note">Submitting opens a GitHub issue. You'll need a GitHub account to complete the submission. Suggestions are reviewed before they appear on the map.</p>}
+      {isPublic && <p className="moderation-note"><strong>Submitting opens GitHub.</strong> Sign in and click “Submit new issue” to finish your suggestion. Suggestions are reviewed before they appear on the map.</p>}
       <div className="form-actions"><button type="button" className="secondary" onClick={clear}>Clear Form</button><button type="submit" className="primary" disabled={!record || duplicates.length > 0}>{isPublic ? 'Submit Buffet' : 'Submit to GitHub'}</button></div>
       <small className="submission-help">Opens GitHub's pre-filled issue form in a new tab. This site never receives or stores GitHub credentials. Your draft remains saved until you clear it.</small>
     </form>
