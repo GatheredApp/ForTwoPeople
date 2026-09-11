@@ -56,5 +56,20 @@
     "postalCode": "37830",
     "yelpUrl": "https://m.yelp.com/biz/golden-oak-grill-buffet-oak-ridge",
     "buffetType": "Chinese"
+  },
+  {
+    "id": "china-buffet-batesville-in",
+    "name": "China Buffet",
+    "address": "128 Cross County Plaza",
+    "city": "Batesville",
+    "state": "IN",
+    "latitude": 39.3146,
+    "longitude": -85.2132,
+    "youtubeVideoId": "pj5SZQ-_m9g",
+    "youtubeUrl": "https://www.youtube.com/watch?v=pj5SZQ-_m9g",
+    "postalCode": "47006",
+    "yelpUrl": "https://m.yelp.com/biz/china-wok-batesville",
+    "reviewDate": "2026-07-19",
+    "buffetType": "Chinese"
   }
 ]
