@@ -12,6 +12,7 @@ export const buffets: Buffet[] = [
     longitude: -85.62,
     youtubeVideoId: '62Vya_ka5Q8',
     youtubeUrl: 'https://www.youtube.com/watch?v=62Vya_ka5Q8',
+yelpUrl: 'https://m.yelp.com/biz/n-v-china-buffet-north-vernon',
     buffetType: 'Chinese',
     isOpen: true,
   },
