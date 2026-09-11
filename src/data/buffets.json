@@ -104,5 +104,23 @@
     "reviewerRating": 2.2,
     "rangoonRating": 2,
     "isOpen": true
+  },
+  {
+    "id": "hibachi-grill-supreme-buffet-knoxville-tn",
+    "name": "Hibachi Grill & Supreme Buffet",
+    "address": "9645 Kingston Pike",
+    "city": "Knoxville",
+    "state": "TN",
+    "latitude": 35.90798,
+    "longitude": -84.10697,
+    "youtubeVideoId": "YRjxh2reQms",
+    "youtubeUrl": "https://www.youtube.com/watch?v=YRjxh2reQms",
+    "postalCode": "37922",
+    "yelpUrl": "https://www.yelp.com/biz/hibachi-grill-and-supreme-buffet-knoxville",
+    "reviewDate": "2026-09-06",
+    "buffetType": "Chinese, Japanese & American",
+    "reviewerRating": 4.3,
+    "rangoonRating": 4,
+    "isOpen": true
   }
 ]
