@@ -30,6 +30,13 @@ function validDate(value: string): boolean {
   return !Number.isNaN(date.valueOf()) && date.toISOString().slice(0, 10) === value
 }
 
+function validYelpUrl(value: string): boolean {
+  try {
+    const url = new URL(value)
+    return url.protocol === 'https:' && (url.hostname === 'yelp.com' || url.hostname.endsWith('.yelp.com'))
+  } catch { return false }
+}
+
 export function validateDraft(draft: BuffetDraft): Record<string, string> {
   const errors: Record<string, string> = {}
   for (const field of ['name', 'address', 'city'] as const) if (!draft[field].trim()) errors[field] = 'This field is required.'
@@ -40,14 +47,14 @@ export function validateDraft(draft: BuffetDraft): Record<string, string> {
   if (!draft.latitude.trim() || !Number.isFinite(latitude) || latitude < -90 || latitude > 90) errors.latitude = 'Enter a number between -90 and 90.'
   if (!draft.longitude.trim() || !Number.isFinite(longitude) || longitude < -180 || longitude > 180) errors.longitude = 'Enter a number between -180 and 180.'
   if (!draft.youtubeUrl.trim() || !extractYouTubeId(draft.youtubeUrl)) errors.youtubeUrl = 'Enter a valid YouTube watch, short, or youtu.be URL.'
-  if (draft.yelpUrl && !/^https:\/\//i.test(draft.yelpUrl)) errors.yelpUrl = 'Yelp URL must begin with HTTPS.'
+  if (draft.yelpUrl && !validYelpUrl(draft.yelpUrl)) errors.yelpUrl = 'Enter a valid HTTPS Yelp URL.'
   if (draft.reviewDate && !validDate(draft.reviewDate)) errors.reviewDate = 'Enter a real date in YYYY-MM-DD format.'
   if (draft.rangoonRating && !/^[1-5]$/.test(draft.rangoonRating)) errors.rangoonRating = 'Choose a rating from 1 to 5.'
   if (draft.reviewerRating && !Number.isFinite(Number(draft.reviewerRating))) errors.reviewerRating = 'Enter a numeric rating.'
   return errors
 }
 
-export function normalizeDraft(draft: BuffetDraft): Buffet | null {
+export function normalizeDraft(draft: BuffetDraft, includeOwnerRating = true): Buffet | null {
   if (Object.keys(validateDraft(draft)).length) return null
   const youtubeVideoId = extractYouTubeId(draft.youtubeUrl)!
   const record: Buffet = {
@@ -58,7 +65,7 @@ export function normalizeDraft(draft: BuffetDraft): Buffet | null {
   const strings = ['postalCode', 'yelpUrl', 'reviewDate', 'buffetType', 'price', 'notes'] as const
   for (const key of strings) if (draft[key].trim()) record[key] = draft[key].trim()
   if (draft.reviewerRating) record.reviewerRating = Number(draft.reviewerRating)
-  if (draft.rangoonRating) record.rangoonRating = Number(draft.rangoonRating) as Buffet['rangoonRating']
+  if (includeOwnerRating && draft.rangoonRating) record.rangoonRating = Number(draft.rangoonRating) as Buffet['rangoonRating']
   if (draft.isOpen) record.isOpen = draft.isOpen === 'open'
   return record
 }
@@ -81,5 +88,27 @@ export function createIssueBody(record: Buffet): string {
 export function createIssueUrl(record: Buffet): string {
   const url = new URL('https://github.com/GatheredApp/ForTwoPeople/issues/new')
   url.search = new URLSearchParams({ title: `Add buffet: ${record.name} — ${record.city}, ${record.state}`, body: createIssueBody(record) }).toString()
+  return url.toString()
+}
+
+export function createPublicIssueBody(record: Buffet): string {
+  const json = JSON.stringify(record, null, 2)
+  const lines = [
+    '## Buffet submission', '', `**Name:** ${record.name}  `,
+    `**Location:** ${record.city}, ${record.state}  `, `**Address:** ${record.address}  `,
+    `**Coordinates:** ${record.latitude}, ${record.longitude}  `,
+    `**YouTube:** [${record.youtubeUrl}](${record.youtubeUrl})  `,
+    `**Yelp:** ${record.yelpUrl ? `[${record.yelpUrl}](${record.yelpUrl})` : 'Not provided'}  `,
+  ]
+  for (const [label, value] of [['Review date', record.reviewDate], ['Buffet type', record.buffetType], ['Price', record.price], ['Reviewer rating', record.reviewerRating], ['Notes', record.notes]]) {
+    if (value !== undefined) lines.push(`**${label}:** ${value}  `)
+  }
+  lines.push('', 'Submitted through the For Two People public buffet submission form.', '', '### What happens next', '', 'This submission is awaiting review by GatheredApp. If approved, it will be added to the buffet map automatically.', '', `<!-- BUFFET_PUBLIC_SUBMISSION_V1\n${json}\nBUFFET_PUBLIC_SUBMISSION_END -->`)
+  return lines.join('\n')
+}
+
+export function createPublicIssueUrl(record: Buffet): string {
+  const url = new URL('https://github.com/GatheredApp/ForTwoPeople/issues/new')
+  url.search = new URLSearchParams({ title: `Buffet submission: ${record.name} — ${record.city}, ${record.state}`, body: createPublicIssueBody(record) }).toString()
   return url.toString()
 }
