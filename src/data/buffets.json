@@ -15,7 +15,7 @@
     "reviewDate": "2026-09-09",
     "reviewerRating": 2.3,
     "rangoonRating": 2,
-    "isOpen": true,
+    "isOpen": true
   },
   {
     "id": "great-wall-buffet-greensburg-in",
@@ -33,7 +33,7 @@
     "isOpen": true,
     "reviewDate": "2026-09-08",
     "reviewerRating": 3.5,
-    "rangoonRating": 4,
+    "rangoonRating": 4
   },
   {
     "id": "china-one-buffet-oregon-oh",
@@ -51,7 +51,7 @@
     "isOpen": true,
     "reviewDate": "2026-08-15",
     "reviewerRating": 3,
-    "rangoonRating": 3,
+    "rangoonRating": 3
   },
   {
     "id": "golden-oak-buffet-grill-oak-ridge-tn",
@@ -69,7 +69,7 @@
     "isOpen": true,
     "reviewDate": "2026-09-07",
     "reviewerRating": 4.2,
-    "rangoonRating": 4,
+    "rangoonRating": 4
   },
   {
     "id": "china-buffet-batesville-in",
@@ -88,7 +88,7 @@
     "isOpen": true,
     "reviewDate": "2026-07-19",
     "reviewerRating": 3.8,
-    "rangoonRating": 4,
+    "rangoonRating": 4
   },
   {
     "id": "old-town-buffet-bowling-green-oh",
@@ -107,7 +107,7 @@
     "isOpen": true,
     "reviewDate": "2026-08-17",
     "reviewerRating": 2.3,
-    "rangoonRating": 2,
+    "rangoonRating": 2
   },
   {
     "id": "fu-yuan-hibachi-buffet-plainfield-in",
@@ -125,7 +125,7 @@
     "buffetType": "Japanese",
     "reviewerRating": 2.2,
     "rangoonRating": 2,
-    "isOpen": true,
+    "isOpen": true
   },
   {
     "id": "hibachi-grill-supreme-buffet-knoxville-tn",
@@ -143,6 +143,6 @@
     "buffetType": "Chinese, Japanese & American",
     "reviewerRating": 4.3,
     "rangoonRating": 4,
-    "isOpen": true,
+    "isOpen": true
   }
 ]
