@@ -29,7 +29,7 @@ export function BuffetCard({ buffet, onClose }: BuffetCardProps) {
         {buffet.reviewerRating != null && <div className="score"><strong>{buffet.reviewerRating.toFixed(1)}</strong><span>Reviewer score</span></div>}
         {buffet.reviewDate && <div className="review-date"><span>Reviewed</span><strong>{formatDate(buffet.reviewDate)}</strong></div>}
       </div>
-      {buffet.rangoonRating != null && <div className="owner-rangoon-rating"><span>For Two People Rangoon Rating</span><GoonRating rating={buffet.rangoonRating} label="For Two People Rangoon Rating" /></div>}
+      {buffet.rangoonRating != null && <div className="owner-rangoon-rating"><span>For Two People Goon Rating</span><GoonRating rating={buffet.rangoonRating} label="For Two People Rangoon Rating" /></div>}
       {buffet.notes && <p className="notes">{buffet.notes}</p>}
       <section className="card-community"><h3>Community Reviews</h3>{communityReviews.length ? <><p className="community-average"><strong>{averageRating(communityReviews).toFixed(1)} / 5</strong> · {communityReviews.length} {communityReviews.length === 1 ? 'review' : 'reviews'}</p>{communityReviews.slice(0,3).map((item) => <ReviewItem key={item.id} item={item} compact />)}{communityReviews.length > 3 && <a href={`?reviews=1&buffet=${encodeURIComponent(buffet.id)}`}>View all community reviews</a>}</> : <p>No community reviews yet.</p>}<a className="post-review-card" href={`?review=1&buffet=${encodeURIComponent(buffet.id)}`}>Post Your Review</a></section>
       <VideoPlayer key={buffet.id} videoId={buffet.youtubeVideoId} title={buffet.name} playSignal={playSignal} />
