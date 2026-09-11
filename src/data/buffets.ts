@@ -1,34 +1,4 @@
 import type { Buffet } from '../types/Buffet'
+import data from './buffets.json'
 
-export const buffets: Buffet[] = [
-  {
-    id: 'nv-china-buffet-north-vernon-in',
-    name: 'NV China Buffet',
-    address: '1599 N State St',
-    city: 'North Vernon',
-    state: 'IN',
-    postalCode: '47265',
-    latitude: 39.005,
-    longitude: -85.62,
-    youtubeVideoId: '62Vya_ka5Q8',
-    youtubeUrl: 'https://www.youtube.com/watch?v=62Vya_ka5Q8',
-yelpUrl: 'https://m.yelp.com/biz/n-v-china-buffet-north-vernon',
-    buffetType: 'Chinese',
-    isOpen: true,
-  },
-{
-    id: 'great-wall-buffet-greensburg-in',
-    name: 'Great Wall Buffet',
-    address: '1811 N Greensburg Crossing',
-    city: 'Greensburg',
-    state: 'IN',
-    postalCode: '47240',
-    latitude: 39.352,
-    longitude: -85.485,
-    youtubeVideoId: 'SsekZyClAEQ',
-    youtubeUrl: 'https://www.youtube.com/watch?v=SsekZyClAEQ',
-yelpUrl: 'https://m.yelp.com/biz/great-wall-greensburg',
-    buffetType: 'Chinese',
-    isOpen: true,
-  },
-]
+export const buffets = data as Buffet[]

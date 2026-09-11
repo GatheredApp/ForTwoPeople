@@ -1,0 +1,92 @@
+name: Add buffet from owner issue
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: buffet-record-ingestion
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    if: github.event.issue.user.login == 'GatheredApp' && github.event.issue.author_association == 'OWNER'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Parse, authorize, validate, and append submission
+        id: ingestion
+        continue-on-error: true
+        run: node scripts/add-buffet-from-issue.mjs
+      - name: Comment with validation error
+        if: steps.ingestion.outcome == 'failure'
+        uses: actions/github-script@v7
+        env:
+          VALIDATION_ERROR: ${{ steps.ingestion.outputs.error }}
+        with:
+          script: |
+            const detail = process.env.VALIDATION_ERROR || 'The submission could not be validated.'
+            await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body: `❌ ${detail}` })
+      - name: Stop after validation failure
+        if: steps.ingestion.outcome == 'failure'
+        run: exit 1
+      - run: npm run validate:data
+      - run: npm run test
+      - run: npm run lint
+      - run: npm run build
+      - name: Commit change
+        run: |
+          if git diff --quiet -- src/data/buffets.json; then
+            echo "The validated submission did not change the dataset." >&2
+            exit 1
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/buffets.json
+          git commit -m "Add buffet from issue #${{ github.event.issue.number }}"
+      - name: Push to default branch
+        id: push
+        run: git push origin "HEAD:${{ github.event.repository.default_branch }}"
+      - name: Comment and close issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const data = require('./src/data/buffets.json')
+            const buffet = data[data.length - 1]
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.issue.number,
+              body: `✅ Added \`${buffet.name.replaceAll('`', '')}\` to the buffet dataset.\n\nThe GitHub Pages deployment should begin automatically.`
+            })
+            await github.rest.issues.update({ ...context.repo, issue_number: context.issue.number, state: 'closed' })
+      - name: Explain a failed ingestion
+        if: failure() && steps.ingestion.outcome != 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pushFailed = '${{ steps.push.outcome }}' === 'failure'
+            const body = pushFailed
+              ? '❌ The buffet passed validation, but repository settings or branch protection prevented the Action from pushing the update.'
+              : '❌ The buffet was not added because validation or a required repository check failed. Review this workflow run for the concise validation error; the issue remains open.'
+            await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body })
+
+  deploy:
+    needs: ingest
+    uses: ./.github/workflows/deploy-pages.yml
+    permissions:
+      contents: read
+      pages: write
+      id-token: write

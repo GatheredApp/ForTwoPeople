@@ -14,6 +14,7 @@ export interface Buffet {
   yelpRating?: number
   yelpReviewCount?: number
   reviewerRating?: number
+  rangoonRating?: 1 | 2 | 3 | 4 | 5
   buffetType?: string
   price?: string
   isOpen?: boolean
