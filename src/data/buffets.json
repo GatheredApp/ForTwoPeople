@@ -42,5 +42,19 @@
     "postalCode": "43616",
     "yelpUrl": "https://m.yelp.com/biz/china-one-buffet-oregon",
     "buffetType": "Chinese"
+  },
+  {
+    "id": "golden-oak-buffet-grill-oak-ridge-tn",
+    "name": "Golden Oak Buffet & Grill",
+    "address": "401 S Tulane Ave",
+    "city": "Oak Ridge",
+    "state": "TN",
+    "latitude": 36.00826,
+    "longitude": -84.25683,
+    "youtubeVideoId": "6969Lx1jKPE",
+    "youtubeUrl": "https://www.youtube.com/watch?v=6969Lx1jKPE",
+    "postalCode": "37830",
+    "yelpUrl": "https://m.yelp.com/biz/golden-oak-grill-buffet-oak-ridge",
+    "buffetType": "Chinese"
   }
 ]
