@@ -37,7 +37,6 @@ export function BuffetCard({ buffet, onClose }: BuffetCardProps) {
         {buffet.yelpUrl && <a href={buffet.yelpUrl} target="_blank" rel="noreferrer">View on Yelp ↗</a>}
         <a href={directionsUrl(buffet)} target="_blank" rel="noreferrer">Get Directions ↗</a>
       </div>
-      <p className="sample-label">Sample listing — not a verified Mullet Review location</p>
     </aside>
   )
 }

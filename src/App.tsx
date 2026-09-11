@@ -40,7 +40,7 @@ export default function App() {
       <header className="brand-bar">
         <div className="brand-mark" aria-hidden="true">MR</div>
         <div><p>Fan-made food finds</p><h1>Mullet Review <span>Buffet Map</span></h1></div>
-        <span className="sample-badge">Sample data</span>
+        <span className="location-badge">{buffets.length} {buffets.length === 1 ? 'location' : 'locations'}</span>
       </header>
       <section className="map-stage" aria-label="Buffet discovery map">
         <BuffetMap buffets={matches} selected={selected} onSelect={(buffet) => updateSelection(buffet)} />

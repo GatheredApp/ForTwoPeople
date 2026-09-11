@@ -29,7 +29,7 @@ function MapViewport({ buffets, selected }: Pick<BuffetMapProps, 'buffets' | 'se
 export function BuffetMap({ buffets, selected, onSelect }: BuffetMapProps) {
   const validBuffets = buffets.filter((item) => Number.isFinite(item.latitude) && Number.isFinite(item.longitude))
   return (
-    <MapContainer center={[34.2, -111.85]} zoom={7} className="map" zoomControl={false} aria-label="Map of sample buffet locations">
+    <MapContainer center={[39.005, -85.62]} zoom={7} className="map" zoomControl={false} aria-label="Map of buffet locations">
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
