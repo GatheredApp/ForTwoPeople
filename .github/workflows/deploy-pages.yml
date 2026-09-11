@@ -25,15 +25,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
+      # This repository intentionally has no lockfile yet, so setup-node's npm
+      # cache cannot be enabled (it requires a dependency lockfile).
       - run: npm install
+      - uses: actions/configure-pages@v5
       - run: npm run lint
       - run: npm test
       - run: npm run build
-      - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: ./dist
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4

@@ -69,11 +69,33 @@ Optional video and Yelp sections disappear or show a useful unavailable state wh
 
 ## Deployment
 
-1. In the GitHub repository, open **Settings → Pages** and choose **GitHub Actions** as the source.
-2. Push to `main` or run the **Deploy to GitHub Pages** workflow manually.
-3. The workflow installs dependencies, runs lint/tests/build, uploads `dist`, and deploys it.
+This repository is a GitHub Pages **project site**. Its expected URL is
+`https://GatheredApp.github.io/ForTwoPeople/` (replace the owner or repository
+portion if the repository is renamed or transferred).
 
-Vite uses relative asset paths (`base: './'`), so the same build works at both a root domain and a project URL such as `https://USERNAME.github.io/REPOSITORY/`. Query-string deep links do not require a server rewrite and therefore avoid GitHub Pages SPA 404s.
+1. In the GitHub repository, open **Settings → Pages → Build and deployment** and set **Source** to **GitHub Actions**.
+2. Push to `main` or run the **Deploy to GitHub Pages** workflow manually.
+3. The workflow checks out the repository, installs dependencies, configures Pages, runs lint/tests/build, uploads only the compiled `./dist` directory, and deploys that artifact.
+
+Vite uses relative asset paths (`base: './'`), so generated script and stylesheet
+references look like `./assets/index-HASH.js` rather than `/assets/index-HASH.js`.
+The same build therefore works at both a root domain and a project URL such as
+`https://USERNAME.github.io/REPOSITORY/`, without hard-coding an account name.
+Query-string deep links such as
+`https://GatheredApp.github.io/ForTwoPeople/?buffet=desert-spoon-phoenix-az`
+do not require a server rewrite or a custom `404.html`.
+
+### Blank-page troubleshooting
+
+Run `npm run build` and inspect `dist/index.html`: its local JavaScript and CSS
+URLs should begin with `./assets/`, and the corresponding files should exist in
+`dist/assets/`. In the deployed site, use the browser developer tools **Console**
+and **Network** panels. A `404` for `/assets/...` (without the repository prefix)
+usually identifies an incorrect Vite base or an old Pages artifact; rerun the
+workflow after confirming `base: './'`. Also check the workflow log to confirm
+that the build completed and that `./dist`, rather than the repository source,
+was uploaded. Runtime failures are logged in the Console and display a basic
+in-page fallback rather than leaving an entirely white screen.
 
 ## Intentionally deferred
 
