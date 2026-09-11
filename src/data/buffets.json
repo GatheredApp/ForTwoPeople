@@ -12,7 +12,10 @@
     "youtubeUrl": "https://www.youtube.com/watch?v=62Vya_ka5Q8",
     "yelpUrl": "https://m.yelp.com/biz/n-v-china-buffet-north-vernon",
     "buffetType": "Chinese",
-    "isOpen": true
+    "reviewDate": "2026-09-09",
+    "reviewerRating": 2.3,
+    "rangoonRating": 2,
+    "isOpen": true,
   },
   {
     "id": "great-wall-buffet-greensburg-in",
@@ -27,7 +30,10 @@
     "youtubeUrl": "https://www.youtube.com/watch?v=SsekZyClAEQ",
     "yelpUrl": "https://m.yelp.com/biz/great-wall-greensburg",
     "buffetType": "Chinese",
-    "isOpen": true
+    "isOpen": true,
+    "reviewDate": "2026-09-08",
+    "reviewerRating": 3.5,
+    "rangoonRating": 4,
   },
   {
     "id": "china-one-buffet-oregon-oh",
@@ -41,7 +47,11 @@
     "youtubeUrl": "https://www.youtube.com/watch?v=nq38EpRrQ5E",
     "postalCode": "43616",
     "yelpUrl": "https://m.yelp.com/biz/china-one-buffet-oregon",
-    "buffetType": "Chinese"
+    "buffetType": "Chinese",
+    "isOpen": true,
+    "reviewDate": "2026-08-15",
+    "reviewerRating": 3,
+    "rangoonRating": 3,
   },
   {
     "id": "golden-oak-buffet-grill-oak-ridge-tn",
@@ -55,7 +65,11 @@
     "youtubeUrl": "https://www.youtube.com/watch?v=6969Lx1jKPE",
     "postalCode": "37830",
     "yelpUrl": "https://m.yelp.com/biz/golden-oak-grill-buffet-oak-ridge",
-    "buffetType": "Chinese"
+    "buffetType": "Chinese",
+    "isOpen": true,
+    "reviewDate": "2026-09-07",
+    "reviewerRating": 4.2,
+    "rangoonRating": 4,
   },
   {
     "id": "china-buffet-batesville-in",
@@ -70,7 +84,11 @@
     "postalCode": "47006",
     "yelpUrl": "https://m.yelp.com/biz/china-wok-batesville",
     "reviewDate": "2026-07-19",
-    "buffetType": "Chinese"
+    "buffetType": "Chinese",
+    "isOpen": true,
+    "reviewDate": "2026-07-19",
+    "reviewerRating": 3.8,
+    "rangoonRating": 4,
   },
   {
     "id": "old-town-buffet-bowling-green-oh",
@@ -85,7 +103,11 @@
     "postalCode": "43402",
     "yelpUrl": "https://m.yelp.com/biz/old-town-buffet-bowling-green",
     "reviewDate": "2026-08-17",
-    "buffetType": "Chinese"
+    "buffetType": "Chinese",
+    "isOpen": true,
+    "reviewDate": "2026-08-17",
+    "reviewerRating": 2.3,
+    "rangoonRating": 2,
   },
   {
     "id": "fu-yuan-hibachi-buffet-plainfield-in",
@@ -103,7 +125,7 @@
     "buffetType": "Japanese",
     "reviewerRating": 2.2,
     "rangoonRating": 2,
-    "isOpen": true
+    "isOpen": true,
   },
   {
     "id": "hibachi-grill-supreme-buffet-knoxville-tn",
@@ -121,6 +143,6 @@
     "buffetType": "Chinese, Japanese & American",
     "reviewerRating": 4.3,
     "rangoonRating": 4,
-    "isOpen": true
+    "isOpen": true,
   }
 ]
