@@ -18,6 +18,8 @@ jobs:
   ingest:
     if: github.event.issue.user.login == 'GatheredApp' && github.event.issue.author_association == 'OWNER'
     runs-on: ubuntu-latest
+    outputs:
+      commit_sha: ${{ steps.commit.outputs.commit_sha }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -48,6 +50,7 @@ jobs:
       - run: npm run lint
       - run: npm run build
       - name: Commit change
+        id: commit
         run: |
           if git diff --quiet -- src/data/buffets.json; then
             echo "The validated submission did not change the dataset." >&2
@@ -57,6 +60,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add src/data/buffets.json
           git commit -m "Add buffet from issue #${{ github.event.issue.number }}"
+          echo "commit_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       - name: Push to default branch
         id: push
         run: git push origin "HEAD:${{ github.event.repository.default_branch }}"
@@ -86,6 +90,8 @@ jobs:
   deploy:
     needs: ingest
     uses: ./.github/workflows/deploy-pages.yml
+    with:
+      ref: ${{ needs.ingest.outputs.commit_sha }}
     permissions:
       contents: read
       pages: write
