@@ -8,13 +8,13 @@ This independent fan project is not affiliated with, endorsed by, or sponsored b
 
 - **React + TypeScript + Vite** provide a small, strict, static client application.
 - **React Leaflet + Leaflet** render an interactive map using OpenStreetMap tiles and attribution. No map API key is used.
-- **`src/data/buffets.ts` is the database.** Search, map markers, cards, links, and deep links are all generated from this one typed collection.
+- **`src/data/buffets.json` is the canonical dataset.** The small `src/data/buffets.ts` wrapper provides its typed application interface; search, map markers, cards, links, and deep links are generated from that collection.
 - YouTube previews use thumbnail images; the privacy-enhanced `youtube-nocookie.com` iframe is created only after a visitor presses play.
 - Yelp information is stored in each static record. There is no Yelp API integration.
 - Query strings such as `?buffet=nv-china-buffet-north-vernon-in` provide GitHub Pages-safe deep links without a client router.
 - GitHub Actions builds and deploys the static `dist` directory to GitHub Pages.
 
-There is no backend, authentication, server-side database, user-generated content, API key, or secret.
+There are no GitHub credentials, API keys, or secrets in the public browser application. Owner-approved additions are processed in GitHub Actions using the workflow's short-lived repository token.
 
 ## Local development
 
@@ -30,13 +30,29 @@ Vite prints the local URL. Additional checks:
 ```bash
 npm run lint
 npm test
+npm run validate:data
 npm run build
 npm run preview
 ```
 
-## Adding or replacing a buffet
+## Adding a Buffet
 
-Edit only `src/data/buffets.ts` in the usual case. Add an object to the exported `buffets` array that satisfies the `Buffet` interface in `src/types/Buffet.ts`, then run lint, tests, and the production build. Use verified information; omit optional fields instead of adding placeholder URLs or values.
+The normal owner workflow is:
+
+1. Open [`https://gatheredapp.github.io/ForTwoPeople/?admin=1`](https://gatheredapp.github.io/ForTwoPeople/?admin=1).
+2. Fill out the form and review the normalized record and JSON preview.
+3. Click **Submit to GitHub**. This opens GitHub's normal new-issue screen; it does not call an API or give the site write access.
+4. Review the pre-filled issue and submit it while signed in to the **`GatheredApp`** GitHub account.
+5. GitHub Actions verifies both the exact account login and the issue's `OWNER` association, independently validates the record, checks for duplicates, and appends it to the dataset.
+6. After lint, tests, data validation, and the production build pass, the Action commits the JSON change, comments on and closes the issue, and invokes the existing Pages deployment workflow.
+
+Draft form values stay in local storage until **Clear Form** is selected. No secret is stored. Automatic ingestion is owner-only: issues from collaborators, organization members, contributors, and all other public users cannot run the write job, even if they contain valid-looking payload markers.
+
+Directly editing the canonical `src/data/buffets.json` array remains available as a fallback. Preserve its two-space JSON formatting and omit unused optional properties, then run `npm run validate:data` before committing. The validator checks the schema, values, and dataset-wide duplicates.
+
+### Record schema
+
+Records in `src/data/buffets.json` satisfy the `Buffet` interface in `src/types/Buffet.ts`. Use verified information and omit optional fields instead of adding placeholder URLs or values.
 
 Each record supports:
 
@@ -50,13 +66,14 @@ Each record supports:
 | `postalCode` | No | ZIP/postal code. |
 | `latitude` | Yes | Valid decimal latitude used for the marker. |
 | `longitude` | Yes | Valid decimal longitude used for the marker. |
-| `youtubeVideoId` | No | YouTube ID only (the part after `v=`), used for the preview and lazy embed. |
-| `youtubeUrl` | No | Complete verified outbound URL for the review. |
+| `youtubeVideoId` | Yes | YouTube ID only (the part after `v=`), used for the preview and lazy embed. |
+| `youtubeUrl` | Yes | Normalized, verified outbound URL for the review. |
 | `reviewDate` | No | Review date in `YYYY-MM-DD` form. Malformed text is displayed as supplied rather than crashing. |
 | `yelpUrl` | No | Complete verified Yelp listing URL. |
 | `yelpRating` | No | Static Yelp rating captured for display; no live API lookup occurs. |
 | `yelpReviewCount` | No | Static Yelp review count captured for display. |
 | `reviewerRating` | No | Mullet Review's numeric rating. |
+| `rangoonRating` | No | Site owner's integer crab-rangoon rating from 1–5. |
 | `buffetType` | No | Searchable cuisine or buffet category. |
 | `price` | No | Short price indicator such as `$`, `$$`, or a fixed price. |
 | `isOpen` | No | Set to `false` to show a reported-closed label; omit when unknown. |
@@ -93,6 +110,10 @@ workflow after confirming `base: './'`. Also check the workflow log to confirm
 that the build completed and that `./dist`, rather than the repository source,
 was uploaded. Runtime failures are logged in the Console and display a basic
 in-page fallback rather than leaving an entirely white screen.
+
+### Required GitHub Actions setting
+
+For issue ingestion to push its validated commit, go to **Repository → Settings → Actions → General → Workflow permissions**, select **Read and write permissions**, and save. Keep branch protection enabled; if it disallows direct GitHub Actions pushes, the issue workflow fails safely and leaves the issue open. Configure an approved GitHub Actions bypass only if that matches the repository's branch-protection policy—do not disable protection.
 
 ## Intentionally deferred
 

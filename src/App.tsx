@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { BuffetCard } from './components/BuffetCard/BuffetCard'
+import { AddBuffetForm } from './components/Admin/AddBuffetForm'
 import { BuffetMap } from './components/Map/BuffetMap'
 import { SearchBar } from './components/SearchBar/SearchBar'
 import { buffets } from './data/buffets'
@@ -7,6 +8,11 @@ import type { Buffet } from './types/Buffet'
 import { buffetIdFromSearch, filterBuffets, searchWithBuffet } from './utilities/buffets'
 
 export default function App() {
+  if (new URLSearchParams(window.location.search).get('admin') === '1') return <AddBuffetForm />
+  return <MapApp />
+}
+
+function MapApp() {
   const [query, setQuery] = useState('')
   const [selected, setSelected] = useState<Buffet | null>(() => {
     const id = buffetIdFromSearch(window.location.search)
