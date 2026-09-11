@@ -71,5 +71,20 @@
     "yelpUrl": "https://m.yelp.com/biz/china-wok-batesville",
     "reviewDate": "2026-07-19",
     "buffetType": "Chinese"
+  },
+  {
+    "id": "old-town-buffet-bowling-green-oh",
+    "name": "Old Town Buffet",
+    "address": "1216 N Main St #101",
+    "city": "Bowling Green",
+    "state": "OH",
+    "latitude": 41.3912,
+    "longitude": -83.6515,
+    "youtubeVideoId": "LD3h2L3SmB8",
+    "youtubeUrl": "https://www.youtube.com/watch?v=LD3h2L3SmB8",
+    "postalCode": "43402",
+    "yelpUrl": "https://m.yelp.com/biz/old-town-buffet-bowling-green",
+    "reviewDate": "2026-08-17",
+    "buffetType": "Chinese"
   }
 ]
