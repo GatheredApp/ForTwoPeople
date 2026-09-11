@@ -86,5 +86,23 @@
     "yelpUrl": "https://m.yelp.com/biz/old-town-buffet-bowling-green",
     "reviewDate": "2026-08-17",
     "buffetType": "Chinese"
+  },
+  {
+    "id": "fu-yuan-hibachi-buffet-plainfield-in",
+    "name": "Fu Yuan Hibachi Buffet",
+    "address": "2535 E Main St",
+    "city": "Plainfield",
+    "state": "IN",
+    "latitude": 39.7121,
+    "longitude": -89.3687,
+    "youtubeVideoId": "4XA3Onn_peQ",
+    "youtubeUrl": "https://www.youtube.com/watch?v=4XA3Onn_peQ",
+    "postalCode": "46168",
+    "yelpUrl": "https://www.yelp.com/biz/fu-yuan-hibachi-plainfield-2",
+    "reviewDate": "2026-07-24",
+    "buffetType": "Japanese",
+    "reviewerRating": 2.2,
+    "rangoonRating": 2,
+    "isOpen": true
   }
 ]
