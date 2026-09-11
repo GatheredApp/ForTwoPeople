@@ -28,5 +28,19 @@
     "yelpUrl": "https://m.yelp.com/biz/great-wall-greensburg",
     "buffetType": "Chinese",
     "isOpen": true
+  },
+  {
+    "id": "china-one-buffet-oregon-oh",
+    "name": "China One Buffet",
+    "address": "3040 Navarre Ave",
+    "city": "Oregon",
+    "state": "OH",
+    "latitude": 41.63592,
+    "longitude": -83.47489,
+    "youtubeVideoId": "nq38EpRrQ5E",
+    "youtubeUrl": "https://www.youtube.com/watch?v=nq38EpRrQ5E",
+    "postalCode": "43616",
+    "yelpUrl": "https://m.yelp.com/biz/china-one-buffet-oregon",
+    "buffetType": "Chinese"
   }
 ]
