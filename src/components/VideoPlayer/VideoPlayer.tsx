@@ -11,7 +11,7 @@ export function VideoPlayer({ videoId, title, playSignal }: VideoPlayerProps) {
   useEffect(() => setPlaying(false), [videoId])
   useEffect(() => { if (playSignal > 0 && videoId) setPlaying(true) }, [playSignal, videoId])
 
-  if (!videoId) return <div className="video-unavailable">Review video not available for this sample.</div>
+  if (!videoId) return <div className="video-unavailable">Review video not available.</div>
   if (playing) {
     return (
       <div className="video-frame">

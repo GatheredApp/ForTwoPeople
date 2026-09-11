@@ -1,9 +1,6 @@
 # Mullet Review Buffet Map
 
-A mobile-first, fan-created discovery map for buffets reviewed by the YouTube channel **Mullet Review**. The current version is a complete static application shell whose initial restaurants are **sample/mock records only**.
-
-> [!CAUTION]
-> Every restaurant, score, date, note, and video association currently in `src/data/buffets.ts` is sample data used only to exercise the interface. It is **not asserted to be a real Mullet Review location or review**. Replace these records with independently verified catalog data before presenting the map as factual.
+A mobile-first, fan-created discovery map for buffets reviewed by the YouTube channel **Mullet Review**.
 
 This independent fan project is not affiliated with, endorsed by, or sponsored by Mullet Review, YouTube, Yelp, Barstool Sports, or One Bite. Product and company names belong to their respective owners.
 
@@ -14,7 +11,7 @@ This independent fan project is not affiliated with, endorsed by, or sponsored b
 - **`src/data/buffets.ts` is the database.** Search, map markers, cards, links, and deep links are all generated from this one typed collection.
 - YouTube previews use thumbnail images; the privacy-enhanced `youtube-nocookie.com` iframe is created only after a visitor presses play.
 - Yelp information is stored in each static record. There is no Yelp API integration.
-- Query strings such as `?buffet=desert-spoon-phoenix-az` provide GitHub Pages-safe deep links without a client router.
+- Query strings such as `?buffet=nv-china-buffet-north-vernon-in` provide GitHub Pages-safe deep links without a client router.
 - GitHub Actions builds and deploys the static `dist` directory to GitHub Pages.
 
 There is no backend, authentication, server-side database, user-generated content, API key, or secret.
@@ -39,7 +36,7 @@ npm run preview
 
 ## Adding or replacing a buffet
 
-Edit only `src/data/buffets.ts` in the usual case. Add an object to the exported `buffets` array that satisfies the `Buffet` interface in `src/types/Buffet.ts`, then run lint, tests, and the production build. Use verified information and replace placeholder video IDs and broad Yelp search links with the correct URLs.
+Edit only `src/data/buffets.ts` in the usual case. Add an object to the exported `buffets` array that satisfies the `Buffet` interface in `src/types/Buffet.ts`, then run lint, tests, and the production build. Use verified information; omit optional fields instead of adding placeholder URLs or values.
 
 Each record supports:
 
@@ -82,7 +79,7 @@ references look like `./assets/index-HASH.js` rather than `/assets/index-HASH.js
 The same build therefore works at both a root domain and a project URL such as
 `https://USERNAME.github.io/REPOSITORY/`, without hard-coding an account name.
 Query-string deep links such as
-`https://GatheredApp.github.io/ForTwoPeople/?buffet=desert-spoon-phoenix-az`
+`https://GatheredApp.github.io/ForTwoPeople/?buffet=nv-china-buffet-north-vernon-in`
 do not require a server rewrite or a custom `404.html`.
 
 ### Blank-page troubleshooting
