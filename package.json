@@ -9,7 +9,8 @@
     "generate:icons": "node scripts/generate-app-icons.mjs",
     "lint": "eslint .",
     "test": "vitest run",
-    "validate:data": "node scripts/validate-buffets.mjs",
+    "validate:data": "node scripts/validate-buffets.mjs && node scripts/validate-reviews.mjs",
+    "validate:reviews": "node scripts/validate-reviews.mjs",
     "validate:pwa": "node scripts/validate-pwa.mjs",
     "preview": "vite preview"
   },

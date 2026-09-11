@@ -2,6 +2,9 @@ import { useState } from 'react'
 import type { Buffet } from '../../types/Buffet'
 import { directionsUrl } from '../../utilities/buffets'
 import { VideoPlayer } from '../VideoPlayer/VideoPlayer'
+import { reviews } from '../../data/reviews'
+import { averageRating, reviewsForBuffet } from '../../utilities/reviews'
+import { ReviewItem } from '../Reviews/ReviewItem'
 
 interface BuffetCardProps { buffet: Buffet; onClose: () => void }
 
@@ -13,6 +16,7 @@ function formatDate(value: string) {
 export function BuffetCard({ buffet, onClose }: BuffetCardProps) {
   const [playSignal, setPlaySignal] = useState(0)
   const locality = [buffet.city, buffet.state, buffet.postalCode].filter(Boolean).join(', ').replace(', ', ', ')
+  const communityReviews = reviewsForBuffet(reviews, buffet.id).sort((a,b) => b.submittedAt.localeCompare(a.submittedAt))
   return (
     <aside className="buffet-card" aria-label={`${buffet.name} details`}>
       <div className="sheet-handle" aria-hidden="true" />
@@ -25,6 +29,7 @@ export function BuffetCard({ buffet, onClose }: BuffetCardProps) {
         {buffet.reviewDate && <div className="review-date"><span>Reviewed</span><strong>{formatDate(buffet.reviewDate)}</strong></div>}
       </div>
       {buffet.notes && <p className="notes">{buffet.notes}</p>}
+      <section className="card-community"><h3>Community Reviews</h3>{communityReviews.length ? <><p className="community-average"><strong>{averageRating(communityReviews).toFixed(1)} / 5</strong> · {communityReviews.length} {communityReviews.length === 1 ? 'review' : 'reviews'}</p>{communityReviews.slice(0,3).map((item) => <ReviewItem key={item.id} item={item} compact />)}{communityReviews.length > 3 && <a href={`?reviews=1&buffet=${encodeURIComponent(buffet.id)}`}>View all community reviews</a>}</> : <p>No community reviews yet.</p>}<a className="post-review-card" href={`?review=1&buffet=${encodeURIComponent(buffet.id)}`}>Post Your Review</a></section>
       <VideoPlayer key={buffet.id} videoId={buffet.youtubeVideoId} title={buffet.name} playSignal={playSignal} />
       <div className="actions">
         {buffet.youtubeVideoId && <button className="primary-action" type="button" onClick={() => setPlaySignal((value) => value + 1)}>▶ Watch Review</button>}
