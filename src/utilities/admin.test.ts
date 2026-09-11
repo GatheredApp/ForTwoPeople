@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Buffet } from '../types/Buffet'
-import { createIssueBody, createIssueUrl, emptyDraft, extractYouTubeId, findDuplicates, generateBuffetId, normalizeDraft, validateDraft } from './admin'
+import { createIssueBody, createIssueUrl, createPublicIssueBody, createPublicIssueUrl, emptyDraft, extractYouTubeId, findDuplicates, generateBuffetId, normalizeDraft, validateDraft } from './admin'
 
 const validDraft = { ...emptyDraft, name: 'Test Buffet', address: '123 Test St', city: 'Example', state: 'IN', id: 'test-buffet-example-in', latitude: '39.1', longitude: '-85.2', youtubeUrl: 'https://youtu.be/62Vya_ka5Q8' }
 
@@ -34,6 +34,17 @@ describe('admin buffet utilities', () => {
     expect(JSON.parse(payload!)).toEqual(record)
     const issueUrl = new URL(createIssueUrl(record))
     expect(issueUrl.origin + issueUrl.pathname).toBe('https://github.com/GatheredApp/ForTwoPeople/issues/new')
+    expect(issueUrl.searchParams.get('body')).toBe(body)
+  })
+
+  it('creates a distinct public issue payload and omits the owner rating', () => {
+    const record = normalizeDraft({ ...validDraft, rangoonRating: '5' }, false)!
+    expect(record).not.toHaveProperty('rangoonRating')
+    const body = createPublicIssueBody(record)
+    expect(body).toContain('BUFFET_PUBLIC_SUBMISSION_V1')
+    expect(body).not.toContain('BUFFET_SUBMISSION_V1\n')
+    const issueUrl = new URL(createPublicIssueUrl(record))
+    expect(issueUrl.searchParams.get('title')).toBe('Buffet submission: Test Buffet — Example, IN')
     expect(issueUrl.searchParams.get('body')).toBe(body)
   })
 })

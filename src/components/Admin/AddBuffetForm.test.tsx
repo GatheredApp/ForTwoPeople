@@ -20,4 +20,14 @@ describe('AddBuffetForm', () => {
     expect(nameInput.value).toBe('Golden Corral')
     expect(document.activeElement).toBe(nameInput)
   })
+
+  it('presents a public form without the owner Rangoon rating and uses a separate draft', async () => {
+    const user = userEvent.setup()
+    render(<AddBuffetForm mode="public" />)
+    expect(screen.getByRole('heading', { name: 'Suggest a Buffet' })).toBeTruthy()
+    expect(screen.queryByLabelText(/Rangoon Rating/i)).toBeNull()
+    await user.type(screen.getByRole('textbox', { name: /buffet name/i }), 'Public Draft')
+    expect(JSON.parse(localStorage.getItem('fortwopeople-public-buffet-draft-v1') ?? '{}').name).toBe('Public Draft')
+    expect(localStorage.getItem('fortwopeople-buffet-draft-v1')).toBeNull()
+  })
 })

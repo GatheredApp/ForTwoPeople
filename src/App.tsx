@@ -10,7 +10,9 @@ import type { Buffet } from './types/Buffet'
 import { buffetIdFromSearch, filterBuffets, searchWithBuffet } from './utilities/buffets'
 
 export default function App() {
-  if (new URLSearchParams(window.location.search).get('admin') === '1') return <AddBuffetForm />
+  const params = new URLSearchParams(window.location.search)
+  if (params.get('admin') === '1') return <AddBuffetForm mode="admin" />
+  if (params.get('submit') === '1') return <AddBuffetForm mode="public" />
   return <MapApp />
 }
 
@@ -49,6 +51,7 @@ function MapApp() {
       <header className="brand-bar">
         <div className="brand-mark" aria-hidden="true"><img src={goonImage} alt="" /></div>
         <div className="brand-copy"><p>For Two People Presents</p><h1>Mullet Review <span>Buffet Map</span></h1></div>
+        <a className="suggest-link" href="?submit=1">Suggest a Buffet</a>
         <div className="view-toggle" role="group" aria-label="Choose buffet view">
           <button type="button" aria-pressed={viewMode === 'map'} onClick={() => setViewMode('map')}>Map</button>
           <button type="button" aria-pressed={viewMode === 'list'} onClick={() => setViewMode('list')}>List</button>

@@ -1,0 +1,45 @@
+name: Triage public buffet submission
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Recognize and label public submission
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.issue.body
+            if (typeof body !== 'string' || body.length > 100000) return
+            const pattern = /<!-- BUFFET_PUBLIC_SUBMISSION_V1\s*\n([\s\S]*?)\nBUFFET_PUBLIC_SUBMISSION_END -->/g
+            const matches = [...body.matchAll(pattern)]
+            if (matches.length !== 1 || matches[0][1].length > 20000) return
+            try {
+              const payload = JSON.parse(matches[0][1])
+              if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return
+            } catch { return }
+
+            const labels = [
+              { name: 'buffet-submission', color: 'e65f32', description: 'Public buffet submission awaiting review' },
+              { name: 'approved-buffet', color: '2f7d62', description: 'Approved by GatheredApp for ingestion' }
+            ]
+            for (const label of labels) {
+              try { await github.rest.issues.getLabel({ ...context.repo, name: label.name }) }
+              catch (error) {
+                if (error.status !== 404) throw error
+                await github.rest.issues.createLabel({ ...context.repo, ...label })
+              }
+            }
+            await github.rest.issues.addLabels({ ...context.repo, issue_number: context.issue.number, labels: ['buffet-submission'] })
+            const acknowledgement = 'Thanks for the submission. This buffet is awaiting review before it can be added to the map.'
+            const comments = await github.paginate(github.rest.issues.listComments, { ...context.repo, issue_number: context.issue.number })
+            if (!comments.some(comment => comment.user?.login === 'github-actions[bot]' && comment.body === acknowledgement)) {
+              await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body: acknowledgement })
+            }

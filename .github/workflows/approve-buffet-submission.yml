@@ -1,0 +1,84 @@
+name: Add approved public buffet
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: buffet-record-ingestion
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    if: github.event.label.name == 'approved-buffet' && github.event.sender.login == 'GatheredApp'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Authorize, validate, and append event snapshot
+        id: ingestion
+        continue-on-error: true
+        run: node scripts/add-approved-public-buffet.mjs
+      - name: Comment with validation error
+        if: steps.ingestion.outcome == 'failure'
+        uses: actions/github-script@v7
+        env:
+          VALIDATION_ERROR: ${{ steps.ingestion.outputs.error }}
+        with:
+          script: |
+            const detail = process.env.VALIDATION_ERROR || 'The submission could not be validated.'
+            await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body: `❌ Could not add this buffet: ${detail}` })
+      - name: Stop after validation failure
+        if: steps.ingestion.outcome == 'failure'
+        run: exit 1
+      - run: npm run validate:data
+      - run: npm run test
+      - run: npm run lint
+      - run: npm run build
+      - name: Commit change
+        id: commit
+        env:
+          BUFFET_NAME: ${{ steps.ingestion.outputs.name }}
+        run: |
+          if git diff --quiet -- src/data/buffets.json; then
+            echo "The submission did not change the dataset." >&2
+            exit 1
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/buffets.json
+          git commit -m "Add buffet: ${BUFFET_NAME}"
+          echo "commit_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Push to default branch
+        id: push
+        run: git push origin "HEAD:${{ github.event.repository.default_branch }}"
+      - name: Comment and close issue
+        uses: actions/github-script@v7
+        env:
+          BUFFET_NAME: ${{ steps.ingestion.outputs.name }}
+          COMMIT_SHA: ${{ steps.commit.outputs.commit_sha }}
+        with:
+          script: |
+            const safeName = process.env.BUFFET_NAME.replaceAll('`', '')
+            const commit = process.env.COMMIT_SHA
+            await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body: `✅ Approved and added \`${safeName}\` to the buffet dataset.\n\nCommit: ${commit}` })
+            await github.rest.issues.update({ ...context.repo, issue_number: context.issue.number, state: 'closed' })
+      - name: Explain a failed check or push
+        if: failure() && steps.ingestion.outcome != 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = '${{ steps.push.outcome }}' === 'failure'
+              ? '❌ The buffet passed validation, but repository settings or branch protection prevented the Action from pushing the update.'
+              : '❌ The buffet was not added because a required repository check failed. The issue remains open.'
+            await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body })

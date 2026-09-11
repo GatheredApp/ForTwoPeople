@@ -35,7 +35,7 @@ npm run build
 npm run preview
 ```
 
-## Adding a Buffet
+## Owner: Add a Buffet
 
 The normal owner workflow is:
 
@@ -49,6 +49,27 @@ The normal owner workflow is:
 Draft form values stay in local storage until **Clear Form** is selected. No secret is stored. Automatic ingestion is owner-only: issues from collaborators, organization members, contributors, and all other public users cannot run the write job, even if they contain valid-looking payload markers.
 
 Directly editing the canonical `src/data/buffets.json` array remains available as a fallback. Preserve its two-space JSON formatting and omit unused optional properties, then run `npm run validate:data` before committing. The validator checks the schema, values, and dataset-wide duplicates.
+
+## Public: Suggest a Buffet
+
+Anyone with a GitHub account can propose a location at [`?submit=1`](https://gatheredapp.github.io/ForTwoPeople/?submit=1):
+
+1. Fill in the **Suggest a Buffet** form and check its normalized preview.
+2. Click **Submit Buffet**, then submit the pre-filled issue on GitHub.
+3. The safe triage workflow recognizes the distinct `BUFFET_PUBLIC_SUBMISSION_V1` payload and applies `buffet-submission` (creating both required labels when necessary).
+4. GatheredApp manually verifies the readable details and payload.
+5. GatheredApp applies the `approved-buffet` label.
+6. GitHub Actions independently authorizes the label event, validates the event's issue-body snapshot and duplicate rules, appends the record, runs all checks, and commits it.
+7. The normal push-triggered Pages workflow redeploys the site; the issue receives a success comment and closes.
+
+Public submissions **do not modify the repository when opened**. Ingestion is authorized only when the exact `approved-buffet` label is applied by the exact `GatheredApp` account. The Node script repeats those checks and reads `event.issue.body` from `GITHUB_EVENT_PATH` rather than fetching an editable live issue after approval. Public payloads have an explicit field allowlist and cannot contain `rangoonRating`; owner ratings remain owner-managed.
+
+The triage workflow has only `contents: read` and `issues: write`. The approval workflow uses only the normal short-lived `GITHUB_TOKEN` with `contents: write` and `issues: write`; no PAT or browser credential is used. It creates these labels automatically if they do not exist:
+
+- `buffet-submission` — Public buffet submission awaiting review
+- `approved-buffet` — Approved by GatheredApp for ingestion
+
+As with owner ingestion, repository **Actions → General → Workflow permissions** must allow read/write access, and branch rules must permit the Actions token to push. Do not weaken branch protection or add a PAT; if policy blocks the push, the workflow comments on the issue and leaves it open.
 
 ### Record schema
 
