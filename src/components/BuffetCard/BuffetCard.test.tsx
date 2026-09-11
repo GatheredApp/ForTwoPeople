@@ -24,8 +24,8 @@ describe('BuffetCard', () => {
   it('shows the owner Rangoon rating separately from the reviewer score and community reviews', () => {
     render(<BuffetCard buffet={buffet} onClose={() => undefined} />)
 
-    const ownerRating = screen.getByRole('img', { name: 'For Two People Rangoon Rating: 2 out of 5' })
-    expect(screen.getByText('For Two People Rangoon Rating')).toBeTruthy()
+    const ownerRating = screen.getByRole('img', { name: 'For Two People Goon Rating: 2 out of 5' })
+    expect(screen.getByText('For Two People Goon Rating')).toBeTruthy()
     expect(within(ownerRating).getAllByRole('presentation')).toHaveLength(5)
     expect(screen.getByText('2.2')).toBeTruthy()
     expect(screen.getByText('Reviewer score')).toBeTruthy()
@@ -36,7 +36,7 @@ describe('BuffetCard', () => {
   it('exposes a five-out-of-five owner Rangoon rating', () => {
     render(<BuffetCard buffet={{ ...buffet, rangoonRating: 5 }} onClose={() => undefined} />)
 
-    expect(screen.getByRole('img', { name: 'For Two People Rangoon Rating: 5 out of 5' })).toBeTruthy()
+    expect(screen.getByRole('img', { name: 'For Two People Goon Rating: 5 out of 5' })).toBeTruthy()
   })
 
   it('shows Fu Yuan Hibachi Buffet\'s stored two-out-of-five rating', () => {
@@ -44,13 +44,13 @@ describe('BuffetCard', () => {
     expect(fuYuan).toBeTruthy()
     render(<BuffetCard buffet={fuYuan!} onClose={() => undefined} />)
 
-    expect(screen.getByRole('img', { name: 'For Two People Rangoon Rating: 2 out of 5' })).toBeTruthy()
+    expect(screen.getByRole('img', { name: 'For Two People Goon Rating: 2 out of 5' })).toBeTruthy()
   })
 
   it('omits the owner rating section when the buffet has no Rangoon rating', () => {
     render(<BuffetCard buffet={{ ...buffet, rangoonRating: undefined }} onClose={() => undefined} />)
 
-    expect(screen.queryByText('For Two People Rangoon Rating')).toBeNull()
-    expect(screen.queryByRole('img', { name: /For Two People Rangoon Rating/ })).toBeNull()
+    expect(screen.queryByText('For Two People Goon Rating')).toBeNull()
+    expect(screen.queryByRole('img', { name: /For Two People Goon Rating/ })).toBeNull()
   })
 })
