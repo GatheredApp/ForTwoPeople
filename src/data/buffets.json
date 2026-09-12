@@ -86,7 +86,6 @@
     "reviewDate": "2026-07-19",
     "buffetType": "Chinese",
     "isOpen": true,
-    "reviewDate": "2026-07-19",
     "reviewerRating": 3.8,
     "rangoonRating": 4
   },
@@ -105,7 +104,6 @@
     "reviewDate": "2026-08-17",
     "buffetType": "Chinese",
     "isOpen": true,
-    "reviewDate": "2026-08-17",
     "reviewerRating": 2.3,
     "rangoonRating": 2
   },
@@ -143,6 +141,22 @@
     "buffetType": "Chinese, Japanese & American",
     "reviewerRating": 4.3,
     "rangoonRating": 4,
+    "isOpen": true
+  },
+  {
+    "id": "china-garden-buffet-cincinnati-oh",
+    "name": "China Garden Buffet",
+    "address": "1108 W Kemper Rd",
+    "city": "Cincinnati",
+    "state": "OH",
+    "latitude": 39.289,
+    "longitude": -84.522,
+    "youtubeVideoId": "EFBXuzlSlqs",
+    "youtubeUrl": "https://www.youtube.com/watch?v=EFBXuzlSlqs",
+    "postalCode": "45240",
+    "yelpUrl": "https://m.yelp.com/biz/china-garden-cincinnati",
+    "reviewDate": "2026-05-26",
+    "buffetType": "Chinese",
     "isOpen": true
   }
 ]
