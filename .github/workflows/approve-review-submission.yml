@@ -31,7 +31,15 @@ jobs:
         env:
           ERROR: ${{ steps.ingestion.outputs.error }}
         with:
-          script: await github.rest.issues.createComment({...context.repo,issue_number:context.issue.number,body:`❌ Could not publish this review: ${process.env.ERROR || 'The submission could not be validated.'}`})
+          script: |
+            const detail =
+              process.env.ERROR || 'The submission could not be validated.'
+
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.issue.number,
+              body: `❌ Could not publish this review: ${detail}`,
+            })
       - if: steps.ingestion.outcome == 'failure'
         run: exit 1
       - if: steps.ingestion.outputs.duplicate != 'true'
@@ -59,11 +67,35 @@ jobs:
           SHA: ${{ steps.commit.outputs.sha }}
         with:
           script: |
-            const body=process.env.DUPLICATE==='true' ? 'This GitHub issue has already been published as a community review.' : `✅ Approved and published this community review.\n\nThe site deployment should begin automatically. Commit: ${process.env.SHA}`
-            await github.rest.issues.createComment({...context.repo,issue_number:context.issue.number,body})
-            await github.rest.issues.update({...context.repo,issue_number:context.issue.number,state:'closed'})
+            const duplicate = process.env.DUPLICATE === 'true'
+
+            const body = duplicate
+              ? 'This GitHub issue has already been published as a community review.'
+              : `✅ Approved and published this community review.
+
+            The site deployment should begin automatically.
+
+            Commit: ${process.env.SHA}`
+
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.issue.number,
+              body,
+            })
+
+            await github.rest.issues.update({
+              ...context.repo,
+              issue_number: context.issue.number,
+              state: 'closed',
+            })
       - name: Explain a failed check or push
         if: failure() && steps.ingestion.outcome != 'failure'
         uses: actions/github-script@v7
         with:
-          script: await github.rest.issues.createComment({...context.repo,issue_number:context.issue.number,body:'❌ The review passed submission validation, but a required repository check or push failed. The issue remains open.'})
+          script: |
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.issue.number,
+              body:
+                '❌ The review passed submission validation, but a required repository check or push failed. The issue remains open.',
+            })
