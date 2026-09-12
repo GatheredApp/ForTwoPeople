@@ -1,4 +1,5 @@
 name: Publish approved community review
+run-name: Review publishing check for #${{ github.event.issue.number }} (${{ github.event.label.name }})
 on:
   issues:
     types: [labeled]
@@ -70,10 +71,10 @@ jobs:
             const duplicate = process.env.DUPLICATE === 'true'
 
             const body = duplicate
-              ? 'This GitHub issue has already been published as a community review.'
+              ? 'This GitHub issue has already been published on the Community Reviews page. Reviews of unlisted buffets do not create map markers.'
               : `✅ Approved and published this community review.
 
-            The site deployment should begin automatically.
+            The site deployment should begin automatically. This review will appear on the **Community Reviews** page. Because its buffet is not linked to the buffet dataset, this approval does not add a marker to the map; a separate **Suggest a Buffet** submission is required for that.
 
             Commit: ${process.env.SHA}`
 
