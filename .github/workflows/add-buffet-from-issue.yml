@@ -16,7 +16,10 @@ concurrency:
 
 jobs:
   ingest:
-    if: github.event.issue.user.login == 'GatheredApp' && github.event.issue.author_association == 'OWNER'
+    if: >-
+      github.event.issue.user.login == 'GatheredApp' &&
+      github.event.issue.author_association == 'OWNER' &&
+      contains(github.event.issue.body, '<!-- BUFFET_SUBMISSION_V1')
     runs-on: ubuntu-latest
     outputs:
       commit_sha: ${{ steps.commit.outputs.commit_sha }}
