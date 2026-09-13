@@ -158,5 +158,23 @@
     "reviewDate": "2026-05-26",
     "buffetType": "Chinese",
     "isOpen": true
+  },
+  {
+    "id": "great-taste-buffet-bloomington-in",
+    "name": "Great Taste Buffet",
+    "address": "3616 W 3rd St",
+    "city": "Bloomington",
+    "state": "IN",
+    "latitude": 39.1646,
+    "longitude": -86.5818,
+    "youtubeVideoId": "gLW2Ifw6wOE",
+    "youtubeUrl": "https://www.youtube.com/watch?v=gLW2Ifw6wOE",
+    "postalCode": "47404",
+    "yelpUrl": "https://m.yelp.com/biz/great-taste-buffet-bloomington",
+    "reviewDate": "2026-09-12",
+    "buffetType": "Chinese",
+    "reviewerRating": 2.2,
+    "rangoonRating": 2,
+    "isOpen": true
   }
 ]
