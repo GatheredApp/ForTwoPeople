@@ -4,11 +4,15 @@ export interface ReviewBuffetSnapshot {
   state: string
   address?: string
   postalCode?: string
+  latitude?: number
+  longitude?: number
+  yelpUrl?: string
 }
 
 export interface CommunityReview {
   id: string
   buffetId?: string
+  communityLocationId?: string
   buffet: ReviewBuffetSnapshot
   displayName: string
   githubUser: string

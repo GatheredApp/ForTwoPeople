@@ -7,17 +7,17 @@ import { averageRating, reviewsForBuffet } from '../../utilities/reviews'
 import { ReviewItem } from '../Reviews/ReviewItem'
 import { GoonRating } from '../Reviews/GoonRating'
 
-interface BuffetCardProps { buffet: Buffet; onClose: () => void }
+interface BuffetCardProps { buffet: Buffet; onClose: () => void; communityReviews?: typeof reviews }
 
 function formatDate(value: string) {
   const date = new Date(`${value}T00:00:00`)
   return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat('en-US', { dateStyle: 'long' }).format(date)
 }
 
-export function BuffetCard({ buffet, onClose }: BuffetCardProps) {
+export function BuffetCard({ buffet, onClose, communityReviews: suppliedReviews }: BuffetCardProps) {
   const [playSignal, setPlaySignal] = useState(0)
   const locality = [buffet.city, buffet.state, buffet.postalCode].filter(Boolean).join(', ').replace(', ', ', ')
-  const communityReviews = reviewsForBuffet(reviews, buffet.id).sort((a,b) => b.submittedAt.localeCompare(a.submittedAt))
+  const communityReviews = (suppliedReviews ?? reviewsForBuffet(reviews, buffet.id)).sort((a,b) => b.submittedAt.localeCompare(a.submittedAt))
   return (
     <aside className="buffet-card" aria-label={`${buffet.name} details`}>
       <div className="sheet-handle" aria-hidden="true" />

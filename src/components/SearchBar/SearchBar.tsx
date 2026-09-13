@@ -20,7 +20,7 @@ export function SearchBar({ query, count, onChange }: SearchBarProps) {
         />
         {query && <button className="clear-button" type="button" onClick={() => onChange('')} aria-label="Clear search">×</button>}
       </div>
-      <p aria-live="polite">{count} {count === 1 ? 'buffet' : 'buffets'} found</p>
+      <p aria-live="polite">{count} {count === 1 ? 'location' : 'locations'} found</p>
     </section>
   )
 }

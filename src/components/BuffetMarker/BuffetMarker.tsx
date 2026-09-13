@@ -1,30 +1,9 @@
 import L from 'leaflet'
 import { Marker, Tooltip } from 'react-leaflet'
 import goonImage from '../../assets/goon.png'
-import type { Buffet } from '../../types/Buffet'
+import type { MapLocation } from '../../types/MapLocation'
 
-interface BuffetMarkerProps {
-  buffet: Buffet
-  selected: boolean
-  onSelect: (buffet: Buffet) => void
-}
-
-const icons = {
-  normal: L.divIcon({ className: 'buffet-pin-wrap', html: `<span class="buffet-pin"><img src="${goonImage}" alt="" aria-hidden="true" /></span>`, iconSize: [42, 48], iconAnchor: [21, 44] }),
-  selected: L.divIcon({ className: 'buffet-pin-wrap selected', html: `<span class="buffet-pin"><img src="${goonImage}" alt="" aria-hidden="true" /></span>`, iconSize: [50, 56], iconAnchor: [25, 52] }),
-}
-
-export function BuffetMarker({ buffet, selected, onSelect }: BuffetMarkerProps) {
-  return (
-    <Marker
-      position={[buffet.latitude, buffet.longitude]}
-      icon={selected ? icons.selected : icons.normal}
-      eventHandlers={{ click: () => onSelect(buffet) }}
-      keyboard
-      title={`View ${buffet.name}`}
-      zIndexOffset={selected ? 1000 : 0}
-    >
-      <Tooltip direction="top" offset={[0, -38]}>{buffet.name}</Tooltip>
-    </Marker>
-  )
+const icon = (kind:MapLocation['kind'], selected:boolean) => L.divIcon({ className:`buffet-pin-wrap ${kind}${selected?' selected':''}`, html:`<span class="buffet-pin"><img src="${goonImage}" alt="" aria-hidden="true" /></span>`, iconSize:selected?[50,56]:[42,48], iconAnchor:selected?[25,52]:[21,44] })
+export function BuffetMarker({ location, selected, onSelect }:{location:MapLocation;selected:boolean;onSelect:(location:MapLocation)=>void}) {
+ return <Marker position={[location.latitude,location.longitude]} icon={icon(location.kind,selected)} eventHandlers={{click:()=>onSelect(location)}} keyboard title={`View ${location.name}`} zIndexOffset={selected?1000:0}><Tooltip direction="top" offset={[0,-38]}>{location.name} · {location.kind==='mullet'?'Mullet Review':'Community Reviewed'}</Tooltip></Marker>
 }
