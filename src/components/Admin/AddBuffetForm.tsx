@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { buffets } from '../../data/buffets'
 import { createIssueUrl, createPublicIssueUrl, emptyDraft, extractYouTubeId, findDuplicates, generateBuffetId, normalizeDraft, US_STATES, validateDraft, type BuffetDraft } from '../../utilities/admin'
 import { GitHubAccountNotice } from '../Contributions/GitHubAccountNotice'
+import { CoordinateLookup } from '../Location/CoordinateLookup'
 
 function loadDraft(key: string): BuffetDraft {
   try { return { ...emptyDraft, ...JSON.parse(localStorage.getItem(key) ?? '{}') } }
@@ -34,6 +35,7 @@ export function AddBuffetForm({ mode = 'admin' }: { mode?: 'admin' | 'public' })
   const [idOverridden, setIdOverridden] = useState(() => Boolean(loadDraft(draftKey).id))
   const [showErrors, setShowErrors] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [coordinatesStale, setCoordinatesStale] = useState(false)
   const copyTimer = useRef<number | undefined>(undefined)
   const errors = useMemo(() => validateDraft(draft), [draft])
   const record = useMemo(() => normalizeDraft(draft, !isPublic), [draft, isPublic])
@@ -67,7 +69,7 @@ export function AddBuffetForm({ mode = 'admin' }: { mode?: 'admin' | 'public' })
   }
   const submit = () => {
     setShowErrors(true)
-    if (!record || duplicates.length) return
+    if (!record || duplicates.length || coordinatesStale) return
     window.open(isPublic ? createPublicIssueUrl(record) : createIssueUrl(record), '_blank', 'noopener,noreferrer')
   }
   const copy = async () => {
@@ -91,8 +93,10 @@ export function AddBuffetForm({ mode = 'admin' }: { mode?: 'admin' | 'public' })
         <Field {...fieldProps('address')} label="Street address" required placeholder="123 Main St" /><Field {...fieldProps('city')} label="City" required />
         <label className="admin-field"><span>State <b aria-hidden="true">*</b></span><select value={draft.state} required onChange={(event) => update('state', event.target.value)} aria-invalid={showErrors && Boolean(errors.state)}><option value="">Select state</option>{US_STATES.map((state) => <option key={state}>{state}</option>)}</select>{showErrors && errors.state && <em role="alert">{errors.state}</em>}</label>
         <Field {...fieldProps('postalCode')} label="Postal code" />
-        <Field {...fieldProps('latitude')} label="Latitude" required type="number" placeholder="39.005" help="Decimal coordinate from -90 to 90." />
-        <Field {...fieldProps('longitude')} label="Longitude" required type="number" placeholder="-85.62" help="Decimal coordinate from -180 to 180." />
+        <CoordinateLookup address={draft.address} city={draft.city} state={draft.state} postalCode={draft.postalCode} latitude={draft.latitude} longitude={draft.longitude}
+          onLatitudeChange={(value) => update('latitude', value)} onLongitudeChange={(value) => update('longitude', value)}
+          onCoordinatesFound={(latitude, longitude) => setDraft((current) => ({ ...current, latitude: String(latitude), longitude: String(longitude) }))}
+          onStaleChange={setCoordinatesStale} latitudeError={errors.latitude} longitudeError={errors.longitude} showValidation={showErrors} />
       </fieldset>
       <fieldset><legend>Review</legend>
         <Field {...fieldProps('youtubeUrl')} label="YouTube URL" required type="url" placeholder="https://youtu.be/…" />
@@ -105,10 +109,10 @@ export function AddBuffetForm({ mode = 'admin' }: { mode?: 'admin' | 'public' })
         <label className="admin-field"><span>Open status</span><select value={draft.isOpen} onChange={(event) => update('isOpen', event.target.value)}><option value="">Unknown</option><option value="open">Open</option><option value="closed">Closed</option></select></label>
       </fieldset>
       <fieldset><legend>Additional information</legend><label className="admin-field admin-wide"><span>Notes</span><textarea value={draft.notes} rows={4} onChange={(event) => update('notes', event.target.value)} placeholder="Optional editorial notes" /></label></fieldset>
-      {showErrors && Object.keys(errors).length > 0 && <div className="form-alert" role="alert">Please correct the highlighted fields before submitting.</div>}
+      {showErrors && (Object.keys(errors).length > 0 || coordinatesStale) && <div className="form-alert" role="alert">{coordinatesStale ? 'Refresh the outdated coordinates or edit them manually before submitting.' : 'Please correct the highlighted fields before submitting.'}</div>}
       {duplicates.length > 0 && <div className="form-alert" role="alert"><strong>Possible duplicate — submission is blocked.</strong><ul>{duplicates.map((problem) => <li key={problem}>{problem}</li>)}</ul></div>}
       {isPublic && <p className="moderation-note"><strong>Submitting opens GitHub.</strong> Sign in and click “Submit new issue” to finish your suggestion. Suggestions are reviewed before they appear on the map.</p>}
-      <div className="form-actions"><button type="button" className="secondary" onClick={clear}>Clear Form</button><button type="submit" className="primary" disabled={!record || duplicates.length > 0}>{isPublic ? 'Submit Buffet' : 'Submit to GitHub'}</button></div>
+      <div className="form-actions"><button type="button" className="secondary" onClick={clear}>Clear Form</button><button type="submit" className="primary" disabled={!record || duplicates.length > 0 || coordinatesStale}>{isPublic ? 'Submit Buffet' : 'Submit to GitHub'}</button></div>
       <small className="submission-help">Opens GitHub's pre-filled issue form in a new tab. This site never receives or stores GitHub credentials. Your draft remains saved until you clear it.</small>
     </form>
     <aside className="record-preview"><h2>Record Preview</h2>{record ? <><dl><dt>ID</dt><dd>{record.id}</dd><dt>Name</dt><dd>{record.name}</dd><dt>Full address</dt><dd>{[record.address, record.city, record.state, record.postalCode].filter(Boolean).join(', ')}</dd><dt>Coordinates</dt><dd>{record.latitude}, {record.longitude}</dd><dt>YouTube URL</dt><dd>{record.youtubeUrl}</dd><dt>YouTube video ID</dt><dd>{record.youtubeVideoId}</dd><dt>Yelp URL</dt><dd>{record.yelpUrl ?? 'Not provided'}</dd><dt>Review date</dt><dd>{record.reviewDate ?? 'Not provided'}</dd><dt>Buffet type</dt><dd>{record.buffetType ?? 'Not provided'}</dd><dt>Price</dt><dd>{record.price ?? 'Not provided'}</dd><dt>Status</dt><dd>{record.isOpen === undefined ? 'Unknown' : record.isOpen ? 'Open' : 'Closed'}</dd><dt>Reviewer rating</dt><dd>{record.reviewerRating ?? 'Not provided'}</dd>{!isPublic && <><dt>Rangoon rating</dt><dd>{record.rangoonRating ?? 'None'}</dd></>}<dt>Notes</dt><dd>{record.notes ?? 'None'}</dd></dl><div className="json-heading"><h3>Exact JSON</h3><button type="button" onClick={copy}>{copied ? 'Copied' : 'Copy JSON'}</button></div><pre>{JSON.stringify(record, null, 2)}</pre></> : <p>Complete the required fields to see the normalized record and exact JSON payload.</p>}</aside>
