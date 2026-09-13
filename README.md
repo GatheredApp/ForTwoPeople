@@ -18,6 +18,20 @@ There are no GitHub credentials, API keys, or secrets in the public browser appl
 
 ## Local development
 
+### Geocoding
+
+The Add Buffet, Suggest a Buffet, and new Community Review location forms can use Mapbox forward geocoding to fill latitude and longitude from a U.S. address. Geocoding is optional: coordinates remain visible and editable, so every form still works with manual coordinates when Mapbox is unavailable.
+
+For local development, copy `.env.example` to an untracked `.env.local` file and add a Mapbox **public** browser token:
+
+```dotenv
+VITE_MAPBOX_TOKEN=pk...
+```
+
+Never use a secret Mapbox token in this static client or commit a token. Restrict the public token to the intended origins (including local development and `https://gatheredapp.github.io`; account for the `/ForTwoPeople/` project path when configuring Mapbox URL restrictions).
+
+For GitHub Pages, create the repository variable `MAPBOX_PUBLIC_TOKEN`. The Pages workflow exposes that variable as `VITE_MAPBOX_TOKEN` only during the Vite build. Like every browser token, it is visible in the compiled client and must be URL-restricted.
+
 Node.js 22 is recommended (and used by the deployment workflow).
 
 ```bash

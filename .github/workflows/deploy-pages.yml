@@ -41,6 +41,8 @@ jobs:
       - run: npm run lint
       - run: npm test
       - run: npm run build
+        env:
+          VITE_MAPBOX_TOKEN: ${{ vars.MAPBOX_PUBLIC_TOKEN }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
