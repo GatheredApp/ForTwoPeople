@@ -18,6 +18,8 @@ export interface CommunityReview {
   githubUser: string
   rating: 1 | 2 | 3 | 4 | 5
   review: string
+  youtubeVideoId?: string
+  youtubeUrl?: string
   visitDate?: string
   wouldReturn?: 'yes' | 'no' | 'unsure'
   submittedAt: string

@@ -1,4 +1,6 @@
 import type { Buffet } from '../types/Buffet'
+import { extractYouTubeId } from './youtube'
+export { extractYouTubeId } from './youtube'
 
 export const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'] as const
 
@@ -8,20 +10,6 @@ export const emptyDraft: BuffetDraft = { id: '', name: '', address: '', city: ''
 
 export function generateBuffetId(name: string, city: string, state: string): string {
   return [name, city, state].join(' ').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
-}
-
-export function extractYouTubeId(value: string): string | null {
-  try {
-    const url = new URL(value)
-    const host = url.hostname.replace(/^www\./, '').toLowerCase()
-    let id = ''
-    if (host === 'youtu.be') id = url.pathname.split('/')[1] ?? ''
-    else if (host === 'youtube.com' || host === 'm.youtube.com') {
-      if (url.pathname === '/watch') id = url.searchParams.get('v') ?? ''
-      else if (/^\/(shorts|embed)\//.test(url.pathname)) id = url.pathname.split('/')[2] ?? ''
-    }
-    return /^[A-Za-z0-9_-]{11}$/.test(id) ? id : null
-  } catch { return null }
 }
 
 function validDate(value: string): boolean {
