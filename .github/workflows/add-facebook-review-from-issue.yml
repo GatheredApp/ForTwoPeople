@@ -15,6 +15,8 @@ jobs:
       github.event.issue.author_association == 'OWNER' &&
       contains(github.event.issue.body, '<!-- FACEBOOK_REVIEW_SUBMISSION_V1')
     runs-on: ubuntu-latest
+    outputs:
+      commit_sha: ${{ steps.commit.outputs.commit_sha }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -55,6 +57,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add src/data/facebookReviews.json
           git commit -m "Add Facebook review from issue #${{ github.event.issue.number }}"
+          echo "commit_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           git push origin "HEAD:${{ github.event.repository.default_branch }}"
       - name: Comment and close
         uses: actions/github-script@v7
@@ -62,7 +65,7 @@ jobs:
           DUPLICATE: ${{ steps.ingestion.outputs.duplicate }}
         with:
           script: |
-            const body = process.env.DUPLICATE === 'true' ? 'This Facebook post is already present.' : '✅ Added this Facebook Group Review. The site will redeploy automatically.'
+            const body = process.env.DUPLICATE === 'true' ? 'This Facebook post is already present.' : '✅ Added this Facebook Group Review. A GitHub Pages deployment will be started for the new commit.'
             await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body })
             await github.rest.issues.update({ ...context.repo, issue_number: context.issue.number, state: 'closed' })
       - name: Explain a failed check or push
@@ -71,3 +74,14 @@ jobs:
         with:
           script: |
             await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body: '❌ The review passed validation, but a repository check or push failed. The issue remains open.' })
+
+  deploy:
+    needs: ingest
+    if: needs.ingest.outputs.commit_sha != ''
+    uses: ./.github/workflows/deploy-pages.yml
+    with:
+      ref: ${{ needs.ingest.outputs.commit_sha }}
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
