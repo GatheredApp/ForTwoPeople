@@ -1,0 +1,3 @@
+import { useState } from 'react'
+import type { FacebookReview } from '../../types/FacebookReview'
+export function FacebookPostEmbed({review,name}:{review:FacebookReview;name:string}){const[shown,setShown]=useState(false);const src=`https://www.facebook.com/plugins/post.php?href=${encodeURIComponent(review.facebookUrl)}&show_text=true&width=500`;return <div className="facebook-post">{!shown&&<button type="button" onClick={()=>setShown(true)}>Show Facebook Post</button>}{shown&&<><iframe src={src} title={`Facebook review of ${name}`} loading="lazy" allowFullScreen/><small>Facebook controls whether this post can be embedded. If it does not appear, open it on Facebook.</small></>}<a href={review.facebookUrl} target="_blank" rel="noreferrer">View Facebook Post ↗</a></div>}

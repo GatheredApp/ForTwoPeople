@@ -113,3 +113,8 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .buffet-list-item.community { border-left:6px solid var(--community-blue); }.buffet-list-item.community.selected { border-color:#3185a3; background:#edfaff; }
 .community-eyebrow { color:#17637d; }.not-mullet { margin:0 0 12px;color:#52645e;font-weight:700;font-size:.82rem; }
 @media(max-width:700px){.map-legend{left:auto;right:10px;bottom:10px;font-size:.65rem}.map-stage:has(.buffet-card) .map-legend{display:none}}
+:root{--facebook-blue:#1877b9}
+.buffet-pin-wrap.facebook .buffet-pin{background:var(--facebook-blue)}
+.buffet-pin-wrap.facebook.selected .buffet-pin{background:#12649e;border-color:#092f4d;box-shadow:0 0 0 4px #fff,0 5px 16px #092f4daa}
+.facebook-dot{background:var(--facebook-blue)}
+.facebook-label,.facebook-eyebrow{color:#07598f;font-weight:800}.card-facebook{border-top:1px solid #d8ddd9;padding-top:14px}.facebook-post{display:grid;gap:8px;margin:10px 0}.facebook-post iframe{border:0;width:100%;max-width:500px;min-height:300px}.facebook-post small{color:#52645e}

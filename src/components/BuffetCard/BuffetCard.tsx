@@ -6,15 +6,17 @@ import { reviews } from '../../data/reviews'
 import { averageRating, reviewsForBuffet } from '../../utilities/reviews'
 import { ReviewItem } from '../Reviews/ReviewItem'
 import { GoonRating } from '../Reviews/GoonRating'
+import type { FacebookReview } from '../../types/FacebookReview'
+import { FacebookPostEmbed } from '../FacebookPostEmbed/FacebookPostEmbed'
 
-interface BuffetCardProps { buffet: Buffet; onClose: () => void; communityReviews?: typeof reviews }
+interface BuffetCardProps { buffet: Buffet; onClose: () => void; communityReviews?: typeof reviews; facebookReviews?: FacebookReview[] }
 
 function formatDate(value: string) {
   const date = new Date(`${value}T00:00:00`)
   return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat('en-US', { dateStyle: 'long' }).format(date)
 }
 
-export function BuffetCard({ buffet, onClose, communityReviews: suppliedReviews }: BuffetCardProps) {
+export function BuffetCard({ buffet, onClose, communityReviews: suppliedReviews, facebookReviews = [] }: BuffetCardProps) {
   const [playSignal, setPlaySignal] = useState(0)
   const locality = [buffet.city, buffet.state, buffet.postalCode].filter(Boolean).join(', ').replace(', ', ', ')
   const communityReviews = (suppliedReviews ?? reviewsForBuffet(reviews, buffet.id)).sort((a,b) => b.submittedAt.localeCompare(a.submittedAt))
@@ -32,6 +34,7 @@ export function BuffetCard({ buffet, onClose, communityReviews: suppliedReviews 
       {buffet.rangoonRating != null && <div className="owner-rangoon-rating"><span>For Two People Goon Rating</span><GoonRating rating={buffet.rangoonRating} label="For Two People Goon Rating" /></div>}
       {buffet.notes && <p className="notes">{buffet.notes}</p>}
       <section className="card-community"><h3>Community Reviews</h3>{communityReviews.length ? <><p className="community-average"><strong>{averageRating(communityReviews).toFixed(1)} / 5</strong> · {communityReviews.length} {communityReviews.length === 1 ? 'review' : 'reviews'}</p>{communityReviews.slice(0,3).map((item) => <ReviewItem key={item.id} item={item} compact />)}{communityReviews.length > 3 && <a href={`?reviews=1&buffet=${encodeURIComponent(buffet.id)}`}>View all community reviews</a>}</> : <p>No community reviews yet.</p>}<a className="post-review-card" href={`?review=1&buffet=${encodeURIComponent(buffet.id)}`}>Post Your Review</a></section>
+      {facebookReviews.length > 0 && <section className="card-facebook"><h3>Facebook Group Reviews</h3>{facebookReviews.map((item) => <FacebookPostEmbed key={item.id} review={item} name={buffet.name} />)}</section>}
       <VideoPlayer key={buffet.id} videoId={buffet.youtubeVideoId} title={buffet.name} playSignal={playSignal} />
       <div className="actions">
         {buffet.youtubeVideoId && <button className="primary-action" type="button" onClick={() => setPlaySignal((value) => value + 1)}>▶ Watch Review</button>}
