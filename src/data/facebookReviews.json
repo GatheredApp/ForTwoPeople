@@ -14,5 +14,21 @@
     "facebookUrl": "https://www.facebook.com/share/p/18CtXfm6T2/",
     "submittedAt": "2026-09-15T03:25:26Z",
     "sourceIssueNumber": 35
+  },
+  {
+    "id": "facebook-review-github-issue-37",
+    "facebookLocationId": "facebook-location-fa01315dfa58",
+    "buffet": {
+      "name": "Royal Buffet",
+      "address": "1400E 75th St",
+      "city": "Downers Grove",
+      "state": "IL",
+      "postalCode": "60516",
+      "latitude": 41.754,
+      "longitude": -88.018
+    },
+    "facebookUrl": "https://www.facebook.com/share/p/1HfimAv6Sy/",
+    "submittedAt": "2026-09-15T03:43:55Z",
+    "sourceIssueNumber": 37
   }
 ]
