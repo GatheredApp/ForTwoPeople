@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "id": "facebook-review-github-issue-35",
+    "facebookLocationId": "facebook-location-9576873d9319",
+    "buffet": {
+      "name": "V Star Buffet",
+      "address": "620 SE Everett Mall Way",
+      "city": "Everett",
+      "state": "WA",
+      "postalCode": "98208",
+      "latitude": 47.9329,
+      "longitude": -122.2196
+    },
+    "facebookUrl": "https://www.facebook.com/share/p/18CtXfm6T2/",
+    "submittedAt": "2026-09-15T03:25:26Z",
+    "sourceIssueNumber": 35
+  }
+]
