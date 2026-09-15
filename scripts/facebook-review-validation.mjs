@@ -1,6 +1,8 @@
 import { createHash } from 'node:crypto'
 import { US_STATES } from './buffet-validation.mjs'
-export const normalizedLocation=v=>[v.name,v.address,v.city,v.state,v.postalCode??''].map(x=>String(x).trim().toLowerCase().replace(/[^a-z0-9]/g,'')).join('|')
+// A location identity intentionally excludes postalCode. ZIP codes may be absent
+// or formatted differently while the strong name/address/city/state match remains.
+export const normalizedLocation=v=>[v.name,v.address,v.city,v.state].map(x=>String(x).trim().toLowerCase().replace(/[^a-z0-9]/g,'')).join('|')
 export const sameLocation=(a,b)=>normalizedLocation(a)===normalizedLocation(b)
 export const deriveFacebookLocationId=b=>`facebook-location-${createHash('sha256').update(normalizedLocation(b)).digest('hex').slice(0,12)}`
 export function normalizeFacebookUrl(value){try{const u=new URL(value.trim()),h=u.hostname.toLowerCase();return u.protocol==='https:'&&(h==='facebook.com'||h.endsWith('.facebook.com')||h==='fb.watch')&&u.pathname!=='/'?u.toString():null}catch{return null}}
