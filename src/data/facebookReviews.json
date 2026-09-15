@@ -30,5 +30,21 @@
     "facebookUrl": "https://www.facebook.com/share/p/1HfimAv6Sy/",
     "submittedAt": "2026-09-15T03:43:55Z",
     "sourceIssueNumber": 37
+  },
+  {
+    "id": "facebook-review-github-issue-38",
+    "facebookLocationId": "facebook-location-b47d0cc2df1d",
+    "buffet": {
+      "name": "Wok-N-Roll",
+      "address": "2344 Hendrickson Rd",
+      "city": "Albert Lea",
+      "state": "MN",
+      "postalCode": "56007",
+      "latitude": 43.6669,
+      "longitude": 93.3444
+    },
+    "facebookUrl": "https://www.facebook.com/share/p/19xutT8ALM/",
+    "submittedAt": "2026-09-15T03:53:05Z",
+    "sourceIssueNumber": 38
   }
 ]
