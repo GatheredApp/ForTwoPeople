@@ -62,5 +62,21 @@
     "facebookUrl": "https://www.facebook.com/share/p/1G7w3DULcR/",
     "submittedAt": "2026-09-15T15:50:16Z",
     "sourceIssueNumber": 39
+  },
+  {
+    "id": "facebook-review-github-issue-40",
+    "facebookLocationId": "facebook-location-830a97f2ea88",
+    "buffet": {
+      "name": "Asia Grill & Buffet",
+      "address": "125 Lee Ave, Pikeville, KY 41501",
+      "city": "Pikeville",
+      "state": "KY",
+      "postalCode": "41501",
+      "latitude": 37.4795,
+      "longitude": -82.5204
+    },
+    "facebookUrl": "https://www.facebook.com/share/r/1F6o3wTuAK/",
+    "submittedAt": "2026-09-15T16:08:19Z",
+    "sourceIssueNumber": 40
   }
 ]
