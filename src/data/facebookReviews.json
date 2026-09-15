@@ -46,5 +46,21 @@
     "facebookUrl": "https://www.facebook.com/share/p/19xutT8ALM/",
     "submittedAt": "2026-09-15T03:53:05Z",
     "sourceIssueNumber": 38
+  },
+  {
+    "id": "facebook-review-github-issue-39",
+    "facebookLocationId": "facebook-location-23e2e23d18f9",
+    "buffet": {
+      "name": "China Buffet",
+      "address": "254 Skidmore Ln #9272",
+      "city": "Sutton",
+      "state": "WV",
+      "postalCode": "26601",
+      "latitude": 38.6653,
+      "longitude": -80.7142
+    },
+    "facebookUrl": "https://www.facebook.com/share/p/1G7w3DULcR/",
+    "submittedAt": "2026-09-15T15:50:16Z",
+    "sourceIssueNumber": 39
   }
 ]
