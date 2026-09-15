@@ -1,31 +1,18 @@
 import type { Buffet } from '../types/Buffet'
-import type { CommunityReview } from '../types/CommunityReview'
+import type { CommunityReview,ReviewBuffetSnapshot } from '../types/CommunityReview'
+import type { FacebookReview,FacebookReviewBuffetSnapshot } from '../types/FacebookReview'
 import type { MapLocation } from '../types/MapLocation'
 import { averageRating } from './reviews'
-
-const norm = (value = '') => value.trim().toLowerCase().replace(/[^a-z0-9]/g, '')
-export function matchingBuffet(review: CommunityReview, buffets: Buffet[]) {
-  if (review.buffetId) return buffets.find(({ id }) => id === review.buffetId)
-  const matches = buffets.filter((b) => norm(b.name) === norm(review.buffet.name) && norm(b.city) === norm(review.buffet.city) && b.state === review.buffet.state && (!review.buffet.address || norm(b.address) === norm(review.buffet.address)))
-  return matches.length === 1 ? matches[0] : undefined
+const norm=(v='')=>v.trim().toLowerCase().replace(/[^a-z0-9]/g,'')
+type Snapshot=ReviewBuffetSnapshot|FacebookReviewBuffetSnapshot|Buffet
+const same=(a:Snapshot,b:Snapshot)=>norm(a.name)===norm(b.name)&&norm(a.address)===norm(b.address)&&norm(a.city)===norm(b.city)&&norm(a.state)===norm(b.state)
+export function matchingBuffet(review:{buffetId?:string;buffet:Snapshot},buffets:Buffet[]){if(review.buffetId)return buffets.find(b=>b.id===review.buffetId);const m=buffets.filter(b=>same(b,review.buffet));return m.length===1?m[0]:undefined}
+export function buildMapLocations(buffets:Buffet[],reviews:CommunityReview[],facebook:FacebookReview[]=[]):MapLocation[]{
+ const result:MapLocation[]=buffets.map(buffet=>({...buffet,kind:'mullet',buffet,communityReviews:[],facebookReviews:[]}));
+ const communities=new Map<string,Extract<MapLocation,{kind:'community'}>>();
+ for(const review of reviews){const mullet=matchingBuffet(review,buffets);if(mullet){result.find(x=>x.id===mullet.id)!.communityReviews.push(review);continue}if(!review.communityLocationId)continue;let loc=communities.get(review.communityLocationId);if(!loc&&review.buffet.address&&Number.isFinite(review.buffet.latitude)&&Number.isFinite(review.buffet.longitude)){loc={kind:'community',id:review.communityLocationId,communityLocationId:review.communityLocationId,name:review.buffet.name,address:review.buffet.address,city:review.buffet.city,state:review.buffet.state,...(review.buffet.postalCode?{postalCode:review.buffet.postalCode}:{}),latitude:review.buffet.latitude!,longitude:review.buffet.longitude!,...(review.buffet.yelpUrl?{yelpUrl:review.buffet.yelpUrl}:{}),communityReviews:[],facebookReviews:[]};communities.set(review.communityLocationId,loc);result.push(loc)}loc?.communityReviews.push(review)}
+ const fbOnly=new Map<string,Extract<MapLocation,{kind:'facebook'}>>();
+ for(const review of facebook){let target=result.find(x=>x.kind==='mullet'&&same(x,review.buffet));if(!target)target=result.find(x=>x.kind==='community'&&same(x,review.buffet));if(target){target.facebookReviews.push(review);continue}const id=review.facebookLocationId;if(!id)continue;let loc=fbOnly.get(id);if(!loc){const b=review.buffet;loc={kind:'facebook',id,facebookLocationId:id,...b,communityReviews:[],facebookReviews:[]};fbOnly.set(id,loc);result.push(loc)}loc.facebookReviews.push(review)}return result
 }
-
-export function buildMapLocations(buffets: Buffet[], reviews: CommunityReview[]): MapLocation[] {
-  const assigned = new Map<string, CommunityReview[]>()
-  const unlinked: CommunityReview[] = []
-  reviews.forEach((review) => { const buffet = matchingBuffet(review, buffets); if (buffet) assigned.set(buffet.id, [...(assigned.get(buffet.id) ?? []), review]); else unlinked.push(review) })
-  const result: MapLocation[] = buffets.map((buffet) => ({ ...buffet, kind:'mullet', buffet, communityReviews:assigned.get(buffet.id) ?? [] }))
-  const groups = new Map<string, CommunityReview[]>()
-  unlinked.forEach((review) => { if (review.communityLocationId) groups.set(review.communityLocationId, [...(groups.get(review.communityLocationId) ?? []), review]) })
-  groups.forEach((items, communityLocationId) => {
-    const b = items[0].buffet
-    if (b.address && Number.isFinite(b.latitude) && Number.isFinite(b.longitude) && b.latitude! >= -90 && b.latitude! <= 90 && b.longitude! >= -180 && b.longitude! <= 180) result.push({ kind:'community', id:communityLocationId, communityLocationId, name:b.name, address:b.address, city:b.city, state:b.state, ...(b.postalCode?{postalCode:b.postalCode}:{}), latitude:b.latitude!, longitude:b.longitude!, ...(b.yelpUrl?{yelpUrl:b.yelpUrl}:{}), communityReviews:items })
-  })
-  return result
-}
-
-export function filterMapLocations(items: MapLocation[], query: string) {
-  const needle=query.trim().toLowerCase(); if(!needle) return items
-  return items.filter((item) => [item.name,item.address,item.city,item.state,item.kind==='mullet'?item.buffet.buffetType:'',...item.communityReviews.flatMap(r=>[r.review,r.displayName])].some(v=>v?.toLowerCase().includes(needle)))
-}
-export const communityAverage = (location: MapLocation) => averageRating(location.communityReviews)
+export function filterMapLocations(items:MapLocation[],query:string){const n=query.trim().toLowerCase();return n?items.filter(i=>[i.name,i.address,i.city,i.state,i.kind==='mullet'?i.buffet.buffetType:'',...i.communityReviews.flatMap(r=>[r.review,r.displayName])].some(v=>v?.toLowerCase().includes(n))):items}
+export const communityAverage=(location:MapLocation)=>averageRating(location.communityReviews)
