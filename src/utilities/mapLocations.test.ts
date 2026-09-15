@@ -1,12 +1,16 @@
 import { describe,expect,it } from 'vitest'
 import type { Buffet } from '../types/Buffet'
 import type { CommunityReview } from '../types/CommunityReview'
+import type { FacebookReview } from '../types/FacebookReview'
 import { buildMapLocations,filterMapLocations } from './mapLocations'
 const buffet:Buffet={id:'royal-town-in',name:'Royal Buffet',address:'1 Main St',city:'Town',state:'IN',latitude:39,longitude:-86}
 const review=(over:Partial<CommunityReview>={}):CommunityReview=>({id:'review-github-issue-1',communityLocationId:'community-location-aaaaaaaaaaaa',buffet:{name:'Community Buffet',address:'2 Main St',city:'Other',state:'IN',latitude:38,longitude:-85},displayName:'Dom',githubUser:'dom',rating:4,review:'Really useful community review text.',submittedAt:'2026-01-01T00:00:00Z',sourceIssueNumber:1,...over})
+const facebook=(over:Partial<FacebookReview>={}):FacebookReview=>({id:'facebook-review-github-issue-10',facebookLocationId:'facebook-location-aaaaaaaaaaaa',buffet:{name:'Facebook Buffet',address:'3 Main St',city:'Elsewhere',state:'IN',latitude:37,longitude:-84},facebookUrl:'https://www.facebook.com/groups/1/posts/10/',submittedAt:'2026-01-02T00:00:00Z',sourceIssueNumber:10,...over})
 describe('map locations',()=>{
  it('keeps Mullet locations orange and attaches linked reviews without duplicates',()=>{const locations=buildMapLocations([buffet],[review({buffetId:buffet.id})]);expect(locations).toHaveLength(1);expect(locations[0]).toMatchObject({kind:'mullet',id:buffet.id});expect(locations[0].communityReviews).toHaveLength(1)})
  it('groups reviews sharing a community id into one blue location',()=>{const locations=buildMapLocations([],[review(),review({id:'review-github-issue-2',sourceIssueNumber:2,rating:2})]);expect(locations).toHaveLength(1);expect(locations[0]).toMatchObject({kind:'community',communityLocationId:'community-location-aaaaaaaaaaaa'});expect(locations[0].communityReviews).toHaveLength(2)})
  it('reconciles historical community reviews when a Mullet buffet is later added',()=>{const historical=review({buffet:{...buffet}});const locations=buildMapLocations([buffet],[historical]);expect(locations).toHaveLength(1);expect(locations[0].kind).toBe('mullet');expect(locations[0].communityReviews).toEqual([historical])})
  it('ignores old unlinked records without coordinates and searches community fields',()=>{expect(buildMapLocations([],[review({buffet:{name:'Old',city:'Town',state:'IN'}})])).toEqual([]);expect(filterMapLocations(buildMapLocations([],[review()]),'Other')).toHaveLength(1);expect(filterMapLocations(buildMapLocations([],[review()]),'Dom')).toHaveLength(1)})
+ it('renders a Facebook-only dataset record as one map location',()=>{const locations=buildMapLocations([],[],[facebook()]);expect(locations).toHaveLength(1);expect(locations[0]).toMatchObject({kind:'facebook',facebookLocationId:'facebook-location-aaaaaaaaaaaa'});expect(locations[0].facebookReviews).toHaveLength(1)})
+ it('uses stored IDs and absorbs Facebook reviews despite snapshot ZIP differences',()=>{const item=facebook({buffetId:buffet.id,facebookLocationId:undefined,buffet:{...buffet,postalCode:'47265'}});const locations=buildMapLocations([buffet],[],[item]);expect(locations).toHaveLength(1);expect(locations[0].kind).toBe('mullet');expect(locations[0].facebookReviews).toEqual([item])})
 })

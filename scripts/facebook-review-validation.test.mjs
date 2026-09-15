@@ -1,0 +1,3 @@
+import { describe,expect,it } from 'vitest'
+import { deriveFacebookLocationId,extractFacebookSubmission,normalizeFacebookUrl } from './facebook-review-validation.mjs'
+describe('Facebook ingestion validation',()=>{it('derives stable opaque locations',()=>{const b={name:'A',address:'1 Main',city:'X',state:'IN'};expect(deriveFacebookLocationId(b)).toMatch(/^facebook-location-[a-f0-9]{12}$/);expect(deriveFacebookLocationId(b)).toBe(deriveFacebookLocationId(b))});it('validates hosts',()=>{expect(normalizeFacebookUrl('https://facebook.com/groups/1/posts/2')).toBeTruthy();expect(normalizeFacebookUrl('https://facebook.com.evil.test/x')).toBeNull()});it('requires exactly one marker',()=>expect(()=>extractFacebookSubmission('')).toThrow())})
